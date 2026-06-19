@@ -5,19 +5,38 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:drift/native.dart';
 
+// Tables
+import 'tables/categories.dart';
+import 'tables/wallets.dart';
+import 'tables/transactions.dart';
+import 'tables/budgets.dart';
+import 'tables/recurring_rules.dart';
+import 'tables/achievements.dart';
+import 'tables/user_dictionary.dart';
+
+// DAOs
+import 'daos/categories_dao.dart';
+import 'daos/wallets_dao.dart';
+import 'daos/transactions_dao.dart';
+
 part 'database.g.dart';
 
-class Categories extends Table {
-  IntColumn get id => integer().autoIncrement()();
-  TextColumn get name => text()();
-  TextColumn get type => text()();
-  TextColumn get icon => text().nullable()();
-  TextColumn get color => text().nullable()();
-  IntColumn get isDefault => integer().withDefault(const Constant(0))();
-  TextColumn get createdAt => text()();
-}
-
-@DriftDatabase(tables: [Categories])
+@DriftDatabase(
+  tables: [
+    Categories,
+    Wallets,
+    Transactions,
+    Budgets,
+    RecurringRules,
+    Achievements,
+    UserDictionary,
+  ],
+  daos: [
+    CategoriesDao,
+    WalletsDao,
+    TransactionsDao,
+  ],
+)
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
