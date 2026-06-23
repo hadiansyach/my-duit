@@ -4,6 +4,7 @@ import 'package:my_duit/features/transactions/presentation/view/transactions_pag
 import 'package:my_duit/features/budget/presentation/view/budget_page.dart';
 
 import 'package:my_duit/features/more/presentation/view/more_page.dart';
+import 'package:my_duit/features/transactions/presentation/view/add_transaction_page.dart';
 
 class MainNavScreen extends StatefulWidget {
   const MainNavScreen({super.key});
@@ -67,7 +68,12 @@ class _MainNavScreenState extends State<MainNavScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Action for adding transaction
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AddTransactionPage(),
+            ),
+          );
         },
         backgroundColor: theme.colorScheme.primary,
         foregroundColor: theme.colorScheme.onPrimary,
