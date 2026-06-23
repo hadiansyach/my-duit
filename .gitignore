@@ -119,6 +119,7 @@ app.*.symbols
 !/dev/ci/**/Gemfile.lock
 
 # Exceptionsss
+.agents/
 /agent
 /docs
 /stitch_myduit_calm_finance_manager

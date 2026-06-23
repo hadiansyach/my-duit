@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_mode_provider.dart';
+import 'features/main_nav/presentation/pages/main_nav_screen.dart';
 
 void main() {
   runApp(
@@ -24,23 +25,9 @@ class MyApp extends ConsumerWidget {
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
       themeMode: themeMode,
-      home: const HomeScreen(),
+      home: const MainNavScreen(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('MyDuit'),
-      ),
-      body: const Center(
-        child: Text('Welcome to MyDuit - Setup Completed!'),
-      ),
-    );
-  }
-}
