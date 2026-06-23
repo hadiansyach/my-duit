@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_duit/core/theme/app_radius.dart';
+import 'package:my_duit/features/wallets/presentation/view/wallets_page.dart';
 
 class QuickActionGrid extends StatelessWidget {
   const QuickActionGrid({super.key});
@@ -14,7 +15,10 @@ class QuickActionGrid extends StatelessWidget {
         icon: Icons.account_balance_wallet,
         color: theme.colorScheme.primary,
         onTap: () {
-          // Action for Accounts & Wallets
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const WalletsPage()),
+          );
         },
       ),
       _QuickActionData(
