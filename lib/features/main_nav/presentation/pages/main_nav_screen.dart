@@ -3,6 +3,8 @@ import 'package:my_duit/features/home/presentation/pages/home_page.dart';
 import 'package:my_duit/features/transactions/presentation/view/transactions_page.dart';
 import 'package:my_duit/features/budget/presentation/view/budget_page.dart';
 
+import 'package:my_duit/features/more/presentation/view/more_page.dart';
+
 class MainNavScreen extends StatefulWidget {
   const MainNavScreen({super.key});
 
@@ -17,7 +19,7 @@ class _MainNavScreenState extends State<MainNavScreen> {
     const HomePage(),
     const TransactionsPage(),
     const BudgetPage(),
-    const Center(child: Text('More Screen')),
+    const MorePage(),
   ];
 
   @override
