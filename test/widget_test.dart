@@ -7,15 +7,15 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_duit/main.dart';
 
 void main() {
   testWidgets('App opens and shows home screen', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(const ProviderScope(child: MyApp()));
 
     // Verify that the welcome message is present.
-    expect(find.text('Welcome to MyDuit - Setup Completed!'), findsOneWidget);
+    expect(find.text('Halo, Budi! 👋'), findsOneWidget);
   });
 }
