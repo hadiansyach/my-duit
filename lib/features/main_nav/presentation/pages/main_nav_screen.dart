@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_duit/features/home/presentation/pages/home_page.dart';
 import 'package:my_duit/features/transactions/presentation/view/transactions_page.dart';
+import 'package:my_duit/features/budget/presentation/view/budget_page.dart';
 
 class MainNavScreen extends StatefulWidget {
   const MainNavScreen({super.key});
@@ -15,7 +16,7 @@ class _MainNavScreenState extends State<MainNavScreen> {
   final List<Widget> _pages = [
     const HomePage(),
     const TransactionsPage(),
-    const Center(child: Text('Budget Screen')),
+    const BudgetPage(),
     const Center(child: Text('More Screen')),
   ];
 
