@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:my_duit/data/local/database_providers.dart';
+
+part 'wallets_providers.g.dart';
 
 enum WalletTheme {
   primary,
@@ -35,55 +38,99 @@ class WalletGroupModel {
   });
 }
 
-final walletAccountsProvider = Provider<List<WalletGroupModel>>((ref) {
-  return const [
-    WalletGroupModel(
-      groupName: 'Kas & Dompet',
-      accounts: [
-        WalletAccountModel(
-          id: 'dompet_tunai',
-          name: 'Dompet Tunai',
-          type: 'Uang Tunai',
-          balance: 1250000.0,
-          icon: Icons.account_balance_wallet,
-          theme: WalletTheme.primary,
-        ),
-        WalletAccountModel(
-          id: 'gopay_utama',
-          name: 'GoPay Utama',
-          type: 'E-Wallet',
-          balance: 500000.0,
-          icon: Icons.smartphone,
-          theme: WalletTheme.secondary,
-        ),
-      ],
-    ),
-    WalletGroupModel(
-      groupName: 'Rekening & Kartu',
-      accounts: [
-        WalletAccountModel(
-          id: 'bca_payroll',
-          name: 'BCA Payroll',
-          type: 'Rekening Bank',
-          balance: 10500000.0,
-          icon: Icons.account_balance,
-          theme: WalletTheme.primary,
-        ),
-        WalletAccountModel(
-          id: 'jenius_flexi',
-          name: 'Jenius Flexi',
-          type: 'Rekening Bank',
-          balance: 2500000.0,
-          icon: Icons.credit_card,
-          theme: WalletTheme.tertiary,
-        ),
-      ],
-    ),
-  ];
-});
+IconData getIconData(String? name) {
+  switch (name) {
+    case 'payments':
+      return Icons.payments;
+    case 'credit_card':
+      return Icons.credit_card;
+    case 'savings':
+      return Icons.savings;
+    case 'account_balance':
+      return Icons.account_balance;
+    case 'smartphone':
+      return Icons.smartphone;
+    case 'account_balance_wallet':
+    default:
+      return Icons.account_balance_wallet;
+  }
+}
 
-final totalBalanceProvider = Provider<double>((ref) {
-  final groups = ref.watch(walletAccountsProvider);
+WalletTheme getWalletTheme(String? colorStr) {
+  switch (colorStr) {
+    case '#2A6F6F':
+    case 'primary':
+      return WalletTheme.primary;
+    case '#8F573A':
+    case 'secondary':
+      return WalletTheme.secondary;
+    case '#4A5568':
+    case 'tertiary':
+    default:
+      return WalletTheme.tertiary;
+  }
+}
+
+String getWalletTypeLabel(String type) {
+  switch (type) {
+    case 'cash':
+      return 'Tunai (Cash)';
+    case 'ewallet':
+      return 'E-Wallet';
+    case 'bank':
+      return 'Bank Transfer';
+    case 'credit_card':
+      return 'Kartu Kredit';
+    case 'savings':
+      return 'Tabungan';
+    default:
+      return 'Lainnya';
+  }
+}
+
+@riverpod
+Stream<List<WalletGroupModel>> walletAccounts(WalletAccountsRef ref) {
+  return ref.watch(walletsDaoProvider).watchAllActiveWallets().map((wallets) {
+    final kasDompet = wallets
+        .where((w) => w.type == 'cash' || w.type == 'ewallet')
+        .map((w) => WalletAccountModel(
+              id: w.id.toString(),
+              name: w.name,
+              type: getWalletTypeLabel(w.type),
+              balance: w.initialBalance,
+              icon: getIconData(w.icon),
+              theme: getWalletTheme(w.color),
+            ))
+        .toList();
+
+    final rekeningKartu = wallets
+        .where((w) => w.type == 'bank' || w.type == 'credit_card')
+        .map((w) => WalletAccountModel(
+              id: w.id.toString(),
+              name: w.name,
+              type: getWalletTypeLabel(w.type),
+              balance: w.initialBalance,
+              icon: getIconData(w.icon),
+              theme: getWalletTheme(w.color),
+            ))
+        .toList();
+
+    return [
+      WalletGroupModel(
+        groupName: 'Kas & Dompet',
+        accounts: kasDompet,
+      ),
+      WalletGroupModel(
+        groupName: 'Rekening & Kartu',
+        accounts: rekeningKartu,
+      ),
+    ];
+  });
+}
+
+@riverpod
+double totalBalance(TotalBalanceRef ref) {
+  final groups = ref.watch(walletAccountsProvider).valueOrNull ?? [];
   double total = 0.0;
   for (var group in groups) {
     for (var account in group.accounts) {
@@ -91,4 +138,4 @@ final totalBalanceProvider = Provider<double>((ref) {
     }
   }
   return total;
-});
+}
