@@ -6,10 +6,7 @@ import 'package:my_duit/features/savings/domain/models/savings_goal_model.dart';
 class SavingsGoalCard extends StatelessWidget {
   final SavingsGoalModel goal;
 
-  const SavingsGoalCard({
-    super.key,
-    required this.goal,
-  });
+  const SavingsGoalCard({super.key, required this.goal});
 
   IconData _getIconData(String name) {
     switch (name) {
@@ -111,7 +108,8 @@ class SavingsGoalCard extends StatelessWidget {
                     child: LinearProgressIndicator(
                       value: goal.percentSaved,
                       minHeight: 6.0,
-                      backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                      backgroundColor:
+                          theme.colorScheme.surfaceContainerHighest,
                       valueColor: AlwaysStoppedAnimation<Color>(primaryColor),
                     ),
                   ),
@@ -119,17 +117,27 @@ class SavingsGoalCard extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Terkumpul: ${currencyFormatter.format(goal.savedAmount)}',
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                          fontWeight: FontWeight.w600,
+                      Expanded(
+                        child: Text(
+                          'Terkumpul: ${currencyFormatter.format(goal.savedAmount)}',
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      Text(
-                        'Target: ${currencyFormatter.format(goal.targetAmount)}',
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: theme.colorScheme.outline,
+                      const SizedBox(width: 8.0),
+                      Flexible(
+                        child: Text(
+                          'Target: ${currencyFormatter.format(goal.targetAmount)}',
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: theme.colorScheme.outline,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.end,
                         ),
                       ),
                     ],
