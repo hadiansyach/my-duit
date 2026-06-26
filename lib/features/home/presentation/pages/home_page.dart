@@ -5,15 +5,16 @@ import 'package:my_duit/features/home/presentation/widgets/period_filter_chips.d
 import 'package:my_duit/features/home/presentation/widgets/category_expense_card.dart';
 import 'package:my_duit/features/home/presentation/widgets/cash_flow_card.dart';
 import 'package:my_duit/features/home/presentation/widgets/recent_transactions_list.dart';
+import 'package:my_duit/features/transactions/presentation/view/add_transaction_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      appBar: HomeTopAppBar(),
-      body: SafeArea(
+    return Scaffold(
+      appBar: const HomeTopAppBar(),
+      body: const SafeArea(
         child: SingleChildScrollView(
           physics: BouncingScrollPhysics(),
           padding: EdgeInsets.only(
@@ -37,6 +38,19 @@ class HomePage extends StatelessWidget {
             ],
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AddTransactionPage(),
+            ),
+          );
+        },
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+        child: const Icon(Icons.add, size: 28.0),
       ),
     );
   }

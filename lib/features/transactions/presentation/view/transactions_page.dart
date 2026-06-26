@@ -6,6 +6,7 @@ import 'package:my_duit/features/transactions/presentation/view/widgets/transact
 import 'package:my_duit/features/transactions/presentation/view/widgets/transaction_filter_chips.dart';
 import 'package:my_duit/features/transactions/presentation/view/widgets/transaction_daily_group.dart';
 import 'package:my_duit/features/transactions/presentation/view/widgets/promo_ad_card.dart';
+import 'package:my_duit/features/transactions/presentation/view/add_transaction_page.dart';
 
 class TransactionsPage extends ConsumerWidget {
   const TransactionsPage({super.key});
@@ -99,6 +100,19 @@ class TransactionsPage extends ConsumerWidget {
             ],
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AddTransactionPage(),
+            ),
+          );
+        },
+        backgroundColor: theme.colorScheme.primary,
+        foregroundColor: theme.colorScheme.onPrimary,
+        child: const Icon(Icons.add, size: 28.0),
       ),
     );
   }

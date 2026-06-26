@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:my_duit/shared/widgets/notification_icon_button.dart';
+
 class TransactionsTopAppBar extends StatelessWidget implements PreferredSizeWidget {
   const TransactionsTopAppBar({super.key});
 
@@ -15,31 +17,16 @@ class TransactionsTopAppBar extends StatelessWidget implements PreferredSizeWidg
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            IconButton(
-              icon: Icon(
-                Icons.menu,
-                color: theme.colorScheme.primary,
-              ),
-              onPressed: () {
-                // Open menu / drawer
-              },
-            ),
-            Text(
-              'MyDuit',
-              style: theme.textTheme.headlineSmall?.copyWith(
-                color: theme.colorScheme.primary,
-                fontWeight: FontWeight.bold,
+            Expanded(
+              child: Text(
+                'MyDuit',
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  color: theme.colorScheme.primary,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-            IconButton(
-              icon: Icon(
-                Icons.notifications_none_outlined,
-                color: theme.colorScheme.primary,
-              ),
-              onPressed: () {
-                // Open notifications
-              },
-            ),
+            const NotificationIconButton(),
           ],
         ),
       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_duit/features/budget/presentation/view/budget_type_selection_page.dart';
+import 'package:my_duit/shared/widgets/notification_icon_button.dart';
 
 class BudgetTopAppBar extends StatelessWidget implements PreferredSizeWidget {
   const BudgetTopAppBar({super.key});
@@ -16,45 +17,45 @@ class BudgetTopAppBar extends StatelessWidget implements PreferredSizeWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            IconButton(
-              icon: Icon(
-                Icons.menu,
-                color: theme.colorScheme.primary,
-              ),
-              onPressed: () {
-                // Open menu / drawer
-              },
-            ),
-            Text(
-              'Budget',
-              style: theme.textTheme.headlineSmall?.copyWith(
-                color: theme.colorScheme.primary,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const BudgetTypeSelectionPage(),
-                  ),
-                );
-              },
-              borderRadius: BorderRadius.circular(20.0),
-              child: Container(
-                width: 40.0,
-                height: 40.0,
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withOpacity(0.2),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.add,
+            Expanded(
+              child: Text(
+                'Budget',
+                style: theme.textTheme.headlineSmall?.copyWith(
                   color: theme.colorScheme.primary,
-                  size: 24.0,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
+            ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const BudgetTypeSelectionPage(),
+                      ),
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(20.0),
+                  child: Container(
+                    width: 40.0,
+                    height: 40.0,
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primary.withOpacity(0.2),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.add,
+                      color: theme.colorScheme.primary,
+                      size: 24.0,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8.0),
+                const NotificationIconButton(),
+              ],
             ),
           ],
         ),

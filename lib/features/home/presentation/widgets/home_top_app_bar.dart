@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:my_duit/features/home/presentation/providers/home_providers.dart';
 
+import 'package:my_duit/shared/widgets/notification_icon_button.dart';
+
 class HomeTopAppBar extends ConsumerWidget implements PreferredSizeWidget {
   const HomeTopAppBar({super.key});
 
@@ -60,15 +62,7 @@ class HomeTopAppBar extends ConsumerWidget implements PreferredSizeWidget {
                 ],
               ),
             ),
-            IconButton(
-              icon: Icon(
-                Icons.notifications_none_outlined,
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-              onPressed: () {
-                // Handle Notification tap
-              },
-            ),
+            const NotificationIconButton(),
           ],
         ),
       ),

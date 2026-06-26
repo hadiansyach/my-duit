@@ -4,7 +4,6 @@ import 'package:my_duit/features/transactions/presentation/view/transactions_pag
 import 'package:my_duit/features/budget/presentation/view/budget_page.dart';
 
 import 'package:my_duit/features/more/presentation/view/more_page.dart';
-import 'package:my_duit/features/transactions/presentation/view/add_transaction_page.dart';
 
 class MainNavScreen extends StatefulWidget {
   const MainNavScreen({super.key});
@@ -66,25 +65,7 @@ class _MainNavScreenState extends State<MainNavScreen> {
         index: _currentIndex,
         children: _pages,
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const AddTransactionPage(),
-            ),
-          );
-        },
-        backgroundColor: theme.colorScheme.primary,
-        foregroundColor: theme.colorScheme.onPrimary,
-        shape: const CircleBorder(),
-        elevation: 4.0,
-        child: const Icon(Icons.add, size: 28.0),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 8.0,
         color: theme.colorScheme.surface,
         elevation: 8.0,
         child: Container(
@@ -95,7 +76,6 @@ class _MainNavScreenState extends State<MainNavScreen> {
             children: [
               buildNavItem(0, Icons.home_filled, 'Home'),
               buildNavItem(1, Icons.list_alt, 'Transactions'),
-              const SizedBox(width: 48.0), // Spacer for Floating Action Button
               buildNavItem(2, Icons.pie_chart, 'Budget'),
               buildNavItem(3, Icons.more_horiz, 'More'),
             ],
