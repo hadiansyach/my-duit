@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../viewmodel/transaction_providers.dart';
+import 'package:my_duit/features/transactions/presentation/viewmodel/transaction_providers.dart';
 
 class TransactionsSearchBar extends ConsumerStatefulWidget {
   const TransactionsSearchBar({super.key});

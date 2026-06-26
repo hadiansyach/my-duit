@@ -6,18 +6,18 @@ import 'package:path/path.dart' as p;
 import 'package:drift/native.dart';
 
 // Tables
-import 'tables/categories.dart';
-import 'tables/wallets.dart';
-import 'tables/transactions.dart';
-import 'tables/budgets.dart';
-import 'tables/recurring_rules.dart';
-import 'tables/achievements.dart';
-import 'tables/user_dictionary.dart';
+import 'package:my_duit/data/local/tables/categories.dart';
+import 'package:my_duit/data/local/tables/wallets.dart';
+import 'package:my_duit/data/local/tables/transactions.dart';
+import 'package:my_duit/data/local/tables/budgets.dart';
+import 'package:my_duit/data/local/tables/recurring_rules.dart';
+import 'package:my_duit/data/local/tables/achievements.dart';
+import 'package:my_duit/data/local/tables/user_dictionary.dart';
 
 // DAOs
-import 'daos/categories_dao.dart';
-import 'daos/wallets_dao.dart';
-import 'daos/transactions_dao.dart';
+import 'package:my_duit/data/local/daos/categories_dao.dart';
+import 'package:my_duit/data/local/daos/wallets_dao.dart';
+import 'package:my_duit/data/local/daos/transactions_dao.dart';
 
 part 'database.g.dart';
 

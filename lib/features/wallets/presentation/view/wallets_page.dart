@@ -7,6 +7,7 @@ import 'package:my_duit/features/wallets/presentation/view/widgets/wallets_top_a
 import 'package:my_duit/features/wallets/presentation/viewmodel/wallets_providers.dart';
 
 import 'package:my_duit/features/wallets/presentation/view/add_account_screen.dart';
+import 'package:my_duit/features/wallets/presentation/view/manage_account_screen.dart';
 
 class WalletsPage extends ConsumerWidget {
   const WalletsPage({super.key});
@@ -56,7 +57,19 @@ class WalletsPage extends ConsumerWidget {
                               separatorBuilder: (context, index) => const SizedBox(height: 8.0),
                               itemBuilder: (context, index) {
                                 final account = group.accounts[index];
-                                return WalletItemCard(account: account);
+                                return WalletItemCard(
+                                  account: account,
+                                  onTap: () {
+                                    final idInt = int.tryParse(account.id);
+                                    if (idInt != null) {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) => ManageAccountScreen(accountId: idInt),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                );
                               },
                             ),
                           ],

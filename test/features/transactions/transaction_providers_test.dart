@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_duit/features/transactions/presentation/viewmodel/transaction_providers.dart';
+import 'package:my_duit/features/transactions/presentation/viewmodel/transaction_filter_provider.dart';
 
 void main() {
   group('Transaction Providers Tests', () {
@@ -9,7 +10,10 @@ void main() {
       addTearDown(container.dispose);
 
       expect(container.read(transactionSearchQueryProvider), '');
-      expect(container.read(transactionTypeFilterProvider), 'Semua');
+      expect(
+        container.read(transactionFilterProvider).transactionType,
+        'Semua',
+      );
       expect(container.read(transactionsListProvider).length, 7);
     });
 
@@ -19,12 +23,12 @@ void main() {
 
       // Search for 'kopi' (case insensitive check)
       container.read(transactionSearchQueryProvider.notifier).state = 'kopi';
-      
+
       final grouped = container.read(filteredGroupedTransactionsProvider);
-      
+
       expect(grouped.keys.length, 1);
-      expect(grouped['Hari Ini, 24 Okt']?.length, 1);
-      expect(grouped['Hari Ini, 24 Okt']?[0].title, 'Kopi Kenangan');
+      expect(grouped['Hari Ini']?.length, 1);
+      expect(grouped['Hari Ini']?[0].title, 'Kopi Kenangan');
     });
 
     test('filter by type (Pemasukan) works correctly', () {
@@ -32,13 +36,15 @@ void main() {
       addTearDown(container.dispose);
 
       // Set filter to Pemasukan
-      container.read(transactionTypeFilterProvider.notifier).state = 'Pemasukan';
+      container
+          .read(transactionFilterProvider.notifier)
+          .setTransactionType('Pemasukan');
 
       final grouped = container.read(filteredGroupedTransactionsProvider);
 
       // We should only get income transactions (Gaji Bulanan and Transfer Teman)
       final allFiltered = grouped.values.expand((element) => element).toList();
-      
+
       expect(allFiltered.every((tx) => tx.isIncome), isTrue);
       expect(allFiltered.length, 2);
     });
@@ -48,7 +54,9 @@ void main() {
       addTearDown(container.dispose);
 
       // Set filter to Pengeluaran
-      container.read(transactionTypeFilterProvider.notifier).state = 'Pengeluaran';
+      container
+          .read(transactionFilterProvider.notifier)
+          .setTransactionType('Pengeluaran');
 
       final grouped = container.read(filteredGroupedTransactionsProvider);
 

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../viewmodel/transaction_providers.dart';
-import 'widgets/transactions_top_app_bar.dart';
-import 'widgets/transactions_search_bar.dart';
-import 'widgets/transaction_filter_chips.dart';
-import 'widgets/transaction_daily_group.dart';
-import 'widgets/promo_ad_card.dart';
+import 'package:my_duit/features/transactions/presentation/viewmodel/transaction_providers.dart';
+import 'package:my_duit/features/transactions/presentation/view/widgets/transactions_top_app_bar.dart';
+import 'package:my_duit/features/transactions/presentation/view/widgets/transactions_search_bar.dart';
+import 'package:my_duit/features/transactions/presentation/view/widgets/transaction_filter_chips.dart';
+import 'package:my_duit/features/transactions/presentation/view/widgets/transaction_daily_group.dart';
+import 'package:my_duit/features/transactions/presentation/view/widgets/promo_ad_card.dart';
 
 class TransactionsPage extends ConsumerWidget {
   const TransactionsPage({super.key});
@@ -61,7 +61,9 @@ class TransactionsPage extends ConsumerWidget {
                       )
                     : ListView.builder(
                         physics: const BouncingScrollPhysics(),
-                        padding: const EdgeInsets.only(bottom: 100.0), // Padding below for bottom navigation bar
+                        padding: const EdgeInsets.only(
+                          bottom: 100.0,
+                        ), // Padding below for bottom navigation bar
                         itemCount: entries.length,
                         itemBuilder: (context, index) {
                           final entry = entries[index];
@@ -86,10 +88,7 @@ class TransactionsPage extends ConsumerWidget {
                           if (index == 0 && entries.length == 1) {
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                dailyGroup,
-                                const PromoAdCard(),
-                              ],
+                              children: [dailyGroup, const PromoAdCard()],
                             );
                           }
 

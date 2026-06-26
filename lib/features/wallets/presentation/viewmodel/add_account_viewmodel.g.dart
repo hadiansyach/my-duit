@@ -7,7 +7,7 @@ part of 'add_account_viewmodel.dart';
 // **************************************************************************
 
 String _$addAccountNotifierHash() =>
-    r'b3b3d87bfc198d5c7ba4bc11474ccff0d084036e';
+    r'7796583e6e75ce92fd3f0a180765902ad7220afb';
 
 /// See also [AddAccountNotifier].
 @ProviderFor(AddAccountNotifier)

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import '../widgets/home_top_app_bar.dart';
-import '../widgets/summary_hero_card.dart';
-import '../widgets/period_filter_chips.dart';
-import '../widgets/category_expense_card.dart';
-import '../widgets/cash_flow_card.dart';
-import '../widgets/recent_transactions_list.dart';
+import 'package:my_duit/features/home/presentation/widgets/home_top_app_bar.dart';
+import 'package:my_duit/features/home/presentation/widgets/summary_hero_card.dart';
+import 'package:my_duit/features/home/presentation/widgets/period_filter_chips.dart';
+import 'package:my_duit/features/home/presentation/widgets/category_expense_card.dart';
+import 'package:my_duit/features/home/presentation/widgets/cash_flow_card.dart';
+import 'package:my_duit/features/home/presentation/widgets/recent_transactions_list.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});

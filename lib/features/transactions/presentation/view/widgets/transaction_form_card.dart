@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../../core/theme/app_radius.dart';
-import '../../../../../core/theme/app_spacing.dart';
+import 'package:my_duit/core/theme/app_radius.dart';
+import 'package:my_duit/core/theme/app_spacing.dart';
 
 class TransactionFormCard extends StatelessWidget {
   final String title;
@@ -95,6 +95,7 @@ class TransactionFormRow extends StatelessWidget {
   final String value;
   final IconData iconData;
   final VoidCallback onTap;
+  final bool showChevron;
 
   const TransactionFormRow({
     super.key,
@@ -102,6 +103,7 @@ class TransactionFormRow extends StatelessWidget {
     required this.value,
     required this.iconData,
     required this.onTap,
+    this.showChevron = false,
   });
 
   @override
@@ -132,25 +134,36 @@ class TransactionFormRow extends StatelessWidget {
               size: 24.0,
             ),
             const SizedBox(width: AppSpacing.md),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 2.0),
-                Text(
-                  value,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurface,
-                    fontWeight: FontWeight.w500,
+                  const SizedBox(height: 2.0),
+                  Text(
+                    value,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurface,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
+            if (showChevron) ...[
+              const SizedBox(width: AppSpacing.sm),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: theme.colorScheme.outline,
+              ),
+            ],
           ],
         ),
       ),

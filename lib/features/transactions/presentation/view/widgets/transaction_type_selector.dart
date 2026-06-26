@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../../core/theme/app_radius.dart';
-import '../../viewmodel/add_transaction_providers.dart';
+import 'package:my_duit/core/theme/app_radius.dart';
+import 'package:my_duit/features/transactions/presentation/viewmodel/add_transaction_providers.dart';
 
 class TransactionTypeSelector extends ConsumerWidget {
   const TransactionTypeSelector({super.key});

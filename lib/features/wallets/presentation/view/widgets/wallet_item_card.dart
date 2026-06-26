@@ -3,14 +3,14 @@ import 'package:intl/intl.dart';
 import 'package:my_duit/core/theme/app_radius.dart';
 import 'package:my_duit/features/wallets/presentation/viewmodel/wallets_providers.dart';
 
-import 'package:my_duit/features/wallets/presentation/view/manage_account_screen.dart';
-
 class WalletItemCard extends StatelessWidget {
   final WalletAccountModel account;
+  final VoidCallback? onTap;
 
   const WalletItemCard({
     super.key,
     required this.account,
+    this.onTap,
   });
 
   @override
@@ -45,16 +45,7 @@ class WalletItemCard extends StatelessWidget {
       ),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: () {
-          final idInt = int.tryParse(account.id);
-          if (idInt != null) {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => ManageAccountScreen(accountId: idInt),
-              ),
-            );
-          }
-        },
+        onTap: onTap,
         child: Container(
           decoration: BoxDecoration(
             color: theme.colorScheme.surfaceContainerLowest,

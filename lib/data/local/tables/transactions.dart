@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
-import 'categories.dart';
-import 'wallets.dart';
-import 'recurring_rules.dart';
+import 'package:my_duit/data/local/tables/categories.dart';
+import 'package:my_duit/data/local/tables/wallets.dart';
+import 'package:my_duit/data/local/tables/recurring_rules.dart';
 
 class Transactions extends Table {
   IntColumn get id => integer().autoIncrement()();

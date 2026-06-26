@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_duit/core/theme/app_radius.dart';
 import 'package:my_duit/features/wallets/presentation/view/wallets_page.dart';
+import 'package:my_duit/features/categories/presentation/view/categories_list_page.dart';
 
 class QuickActionGrid extends StatelessWidget {
   const QuickActionGrid({super.key});
@@ -26,7 +27,10 @@ class QuickActionGrid extends StatelessWidget {
         icon: Icons.category,
         color: const Color(0xFF8F4C2F), // Secondary color representation
         onTap: () {
-          // Action for Categories
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const CategoriesListPage()),
+          );
         },
       ),
       _QuickActionData(

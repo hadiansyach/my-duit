@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import '../../viewmodel/budget_providers.dart';
+import 'package:my_duit/features/budget/presentation/viewmodel/budget_providers.dart';
 
 class BudgetSummaryCard extends ConsumerWidget {
   const BudgetSummaryCard({super.key});
@@ -28,7 +28,7 @@ class BudgetSummaryCard extends ConsumerWidget {
         color: theme.colorScheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(24.0),
         border: Border.all(
-          color: theme.colorScheme.outlineVariant.withOpacity(0.5),
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
           width: 1.0,
         ),
         boxShadow: const [

@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../viewmodel/budget_providers.dart';
-import 'widgets/budget_top_app_bar.dart';
-import 'widgets/period_filter_chips.dart';
-import 'widgets/budget_summary_card.dart';
-import 'widgets/budget_category_card.dart';
-import 'widgets/savings_goal_card.dart';
+import 'package:my_duit/features/budget/presentation/viewmodel/budget_providers.dart';
+import 'package:my_duit/features/savings/presentation/viewmodel/savings_providers.dart';
+import 'package:my_duit/features/budget/presentation/view/widgets/budget_top_app_bar.dart';
+import 'package:my_duit/features/budget/presentation/view/widgets/period_filter_chips.dart';
+import 'package:my_duit/features/budget/presentation/view/widgets/budget_summary_card.dart';
+import 'package:my_duit/features/budget/presentation/view/widgets/budget_category_card.dart';
+import 'package:my_duit/features/budget/presentation/view/widgets/savings_goal_card.dart';
 
 class BudgetPage extends ConsumerWidget {
   const BudgetPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final categories = ref.watch(budgetCategoriesProvider);
-    final savingsGoals = ref.watch(savingsGoalsProvider);
+    final activePeriod = ref.watch(budgetPeriodFilterProvider);
+    final allCategories = ref.watch(budgetCategoriesNotifierProvider);
+    final categories = allCategories.where((c) => c.periodType == activePeriod).toList();
+    final savingsGoals = ref.watch(savingsGoalsNotifierProvider);
     final theme = Theme.of(context);
 
     return Scaffold(

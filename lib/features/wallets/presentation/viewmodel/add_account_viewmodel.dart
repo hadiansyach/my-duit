@@ -6,8 +6,8 @@ import 'package:my_duit/data/local/database_providers.dart';
 part 'add_account_viewmodel.g.dart';
 
 class AddAccountState {
-  final bool isCashWalletToggle;
   final double initialBalance;
+  final String balanceString; // Digunakan untuk input dari custom keypad
   final String accountName;
   final String walletType;
   final String selectedColor;
@@ -16,8 +16,8 @@ class AddAccountState {
   final String? errorMessage;
 
   AddAccountState({
-    required this.isCashWalletToggle,
     required this.initialBalance,
+    required this.balanceString,
     required this.accountName,
     required this.walletType,
     required this.selectedColor,
@@ -27,8 +27,8 @@ class AddAccountState {
   });
 
   AddAccountState copyWith({
-    bool? isCashWalletToggle,
     double? initialBalance,
+    String? balanceString,
     String? accountName,
     String? walletType,
     String? selectedColor,
@@ -37,8 +37,8 @@ class AddAccountState {
     String? errorMessage,
   }) {
     return AddAccountState(
-      isCashWalletToggle: isCashWalletToggle ?? this.isCashWalletToggle,
       initialBalance: initialBalance ?? this.initialBalance,
+      balanceString: balanceString ?? this.balanceString,
       accountName: accountName ?? this.accountName,
       walletType: walletType ?? this.walletType,
       selectedColor: selectedColor ?? this.selectedColor,
@@ -54,25 +54,52 @@ class AddAccountNotifier extends _$AddAccountNotifier {
   @override
   AddAccountState build() {
     return AddAccountState(
-      isCashWalletToggle: true,
       initialBalance: 0.0,
+      balanceString: '0',
       accountName: '',
-      walletType: 'cash',
-      selectedColor: '#2A6F6F',
-      selectedIcon: 'account_balance_wallet',
+      walletType: 'bank', // default: Rekening Bank (bank) sesuai mockup
+      selectedColor: '#2A6F6F', // Teal
+      selectedIcon: 'account_balance', // Rekening Bank icon
       isSaving: false,
     );
   }
 
-  void setToggle(bool isCashWallet) {
+  void appendBalance(String val) {
+    String current = state.balanceString;
+    if (current == '0') {
+      if (val == '000' || val == '0') return;
+      current = val;
+    } else {
+      current = current + val;
+    }
+    
+    final balance = double.tryParse(current) ?? 0.0;
     state = state.copyWith(
-      isCashWalletToggle: isCashWallet,
-      walletType: isCashWallet ? 'cash' : 'bank',
+      balanceString: current,
+      initialBalance: balance,
+    );
+  }
+
+  void removeLastBalanceDigit() {
+    String current = state.balanceString;
+    if (current.length <= 1) {
+      current = '0';
+    } else {
+      current = current.substring(0, current.length - 1);
+    }
+    
+    final balance = double.tryParse(current) ?? 0.0;
+    state = state.copyWith(
+      balanceString: current,
+      initialBalance: balance,
     );
   }
 
   void setInitialBalance(double balance) {
-    state = state.copyWith(initialBalance: balance);
+    state = state.copyWith(
+      initialBalance: balance,
+      balanceString: balance.toInt().toString(),
+    );
   }
 
   void setAccountName(String name) {
@@ -80,7 +107,22 @@ class AddAccountNotifier extends _$AddAccountNotifier {
   }
 
   void setWalletType(String type) {
-    state = state.copyWith(walletType: type);
+    // Sesuaikan icon default berdasarkan walletType baru
+    String newIcon = 'account_balance_wallet';
+    if (type == 'bank') {
+      newIcon = 'account_balance';
+    } else if (type == 'credit_card') {
+      newIcon = 'credit_card';
+    } else if (type == 'ewallet') {
+      newIcon = 'smartphone';
+    } else if (type == 'savings') {
+      newIcon = 'savings';
+    }
+    
+    state = state.copyWith(
+      walletType: type,
+      selectedIcon: newIcon,
+    );
   }
 
   void setColor(String color) {

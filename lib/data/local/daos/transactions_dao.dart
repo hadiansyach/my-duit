@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
-import '../database.dart';
-import '../tables/transactions.dart';
+import 'package:my_duit/data/local/database.dart';
+import 'package:my_duit/data/local/tables/transactions.dart';
 
 part 'transactions_dao.g.dart';
 

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'app_colors.dart';
-import 'app_semantic_colors.dart';
-import 'app_typography.dart';
-import 'app_radius.dart';
+import 'package:my_duit/core/theme/app_colors.dart';
+import 'package:my_duit/core/theme/app_semantic_colors.dart';
+import 'package:my_duit/core/theme/app_typography.dart';
+import 'package:my_duit/core/theme/app_radius.dart';
 
 abstract class AppTheme {
   static ThemeData light() {

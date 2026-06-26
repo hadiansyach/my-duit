@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../viewmodel/budget_providers.dart';
+import 'package:my_duit/features/budget/presentation/viewmodel/budget_providers.dart';
 
 class PeriodFilterChips extends ConsumerWidget {
   const PeriodFilterChips({super.key});
@@ -26,7 +26,7 @@ class PeriodFilterChips extends ConsumerWidget {
                     padding: const EdgeInsets.only(right: 8.0),
                     child: GestureDetector(
                       onTap: () {
-                        ref.read(budgetPeriodFilterProvider.notifier).state = filter;
+                        ref.read(budgetPeriodFilterProvider.notifier).setFilter(filter);
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(

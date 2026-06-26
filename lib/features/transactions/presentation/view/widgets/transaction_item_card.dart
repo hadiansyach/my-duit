@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:my_duit/core/theme/app_semantic_colors.dart';
-import '../../viewmodel/transaction_providers.dart';
+import 'package:my_duit/features/transactions/presentation/viewmodel/transaction_providers.dart';
 
 class TransactionItemCard extends StatelessWidget {
   final TransactionModel transaction;

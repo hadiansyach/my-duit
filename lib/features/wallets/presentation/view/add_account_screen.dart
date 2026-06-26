@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_duit/core/theme/app_colors.dart';
-import 'package:my_duit/core/theme/app_radius.dart';
 import 'package:my_duit/features/wallets/presentation/viewmodel/add_account_viewmodel.dart';
-import 'package:my_duit/features/wallets/presentation/viewmodel/wallets_providers.dart';
 
 class AddAccountScreen extends ConsumerStatefulWidget {
   const AddAccountScreen({super.key});
@@ -15,20 +13,26 @@ class AddAccountScreen extends ConsumerStatefulWidget {
 class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
-  late TextEditingController _balanceController;
 
   @override
   void initState() {
     super.initState();
     _nameController = TextEditingController();
-    _balanceController = TextEditingController(text: '0');
   }
 
   @override
   void dispose() {
     _nameController.dispose();
-    _balanceController.dispose();
     super.dispose();
+  }
+
+  // Helper untuk memformat angka string menjadi format ribuan (Rupiah)
+  String _formatRupiah(String val) {
+    if (val.isEmpty || val == '0') return '0';
+    final doubleValue = double.tryParse(val) ?? 0.0;
+    // Format sederhana tanpa desimal
+    final RegExp reg = RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))');
+    return doubleValue.toInt().toString().replaceAllMapped(reg, (Match match) => '${match[1]}.');
   }
 
   @override
@@ -36,12 +40,56 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
     final state = ref.watch(addAccountNotifierProvider);
     final notifier = ref.read(addAccountNotifierProvider.notifier);
 
-    // List of colors and icons based on the mockup
-    final colorsList = ['#2A6F6F', '#8F573A', '#4A5568'];
-    final iconsList = ['account_balance_wallet', 'payments', 'credit_card', 'savings'];
+    // List jenis akun dari desain mockup HTML
+    final List<Map<String, dynamic>> walletTypes = [
+      {
+        'type': 'cash',
+        'label': 'Dompet',
+        'icon': Icons.account_balance_wallet,
+      },
+      {
+        'type': 'bank',
+        'label': 'Rekening Bank',
+        'icon': Icons.account_balance,
+      },
+      {
+        'type': 'credit_card',
+        'label': 'Kartu Kredit',
+        'icon': Icons.credit_card,
+      },
+      {
+        'type': 'ewallet',
+        'label': 'E-Wallet',
+        'icon': Icons.phone_iphone,
+      },
+      {
+        'type': 'savings',
+        'label': 'Tabungan',
+        'icon': Icons.savings,
+      },
+      {
+        'type': 'other',
+        'label': 'Lainnya',
+        'icon': Icons.category,
+      },
+    ];
+
+    // 10 Warna Aksen dari mockup HTML
+    final List<String> colorsList = [
+      '#2A6F6F', // Teal
+      '#87A89A', // Sage
+      '#C99C8D', // Clay
+      '#D4A373', // Amber
+      '#7D8C9C', // Slate
+      '#B5838D', // Rose
+      '#6D597A', // Plum
+      '#355070', // Navy
+      '#6A7B68', // Olive
+      '#9E9E9E', // Gray
+    ];
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: const Color(0xFFFAF8F5), // Sesuai warna background mockup
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -51,8 +99,8 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
         ),
         title: Text(
           'Tambah Akun',
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: AppColors.onSurface,
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                color: AppColors.primary,
                 fontWeight: FontWeight.bold,
               ),
         ),
@@ -64,93 +112,100 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
           children: [
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Segmented Toggle
-                    Container(
-                      decoration: BoxDecoration(
-                        color: AppColors.surfaceContainerHighest,
-                        borderRadius: BorderRadius.circular(AppRadius.inputs),
-                      ),
-                      padding: const EdgeInsets.all(4.0),
+                    // Section: Jenis Akun
+                    Text(
+                      'JENIS AKUN',
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            color: AppColors.onSurfaceVariant,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.2,
+                          ),
+                    ),
+                    const SizedBox(height: 8.0),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      clipBehavior: Clip.none,
                       child: Row(
-                        children: [
-                          Expanded(
-                            child: InkWell(
-                              onTap: () => notifier.setToggle(true),
-                              borderRadius: BorderRadius.circular(AppRadius.inputs - 2),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(vertical: 10.0),
-                                decoration: BoxDecoration(
-                                  color: state.isCashWalletToggle
-                                      ? AppColors.surfaceContainerLowest
-                                      : Colors.transparent,
-                                  borderRadius: BorderRadius.circular(AppRadius.inputs - 2),
-                                  boxShadow: state.isCashWalletToggle
-                                      ? [
-                                          BoxShadow(
-                                            color: Colors.black.withValues(alpha: 0.04),
-                                            blurRadius: 4,
-                                            offset: const Offset(0, 2),
-                                          ),
-                                        ]
-                                      : null,
-                                ),
-                                alignment: Alignment.center,
-                                child: Text(
-                                  'Kas & Dompet',
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                        color: state.isCashWalletToggle
-                                            ? AppColors.primary
-                                            : AppColors.onSurfaceVariant,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                        children: walletTypes.map((item) {
+                          final isSelected = state.walletType == item['type'];
+                          return GestureDetector(
+                            onTap: () => notifier.setWalletType(item['type']),
+                            child: Container(
+                              margin: const EdgeInsets.only(right: 8.0),
+                              padding: const EdgeInsets.all(16.0),
+                              constraints: const BoxConstraints(minWidth: 88.0),
+                              decoration: BoxDecoration(
+                                color: isSelected ? const Color(0xFFFAF8F5) : AppColors.surfaceContainerLowest,
+                                borderRadius: BorderRadius.circular(12.0),
+                                border: Border.all(
+                                  color: isSelected ? AppColors.primaryContainer : AppColors.outlineVariant,
+                                  width: isSelected ? 2.0 : 1.0,
                                 ),
                               ),
-                            ),
-                          ),
-                          Expanded(
-                            child: InkWell(
-                              onTap: () => notifier.setToggle(false),
-                              borderRadius: BorderRadius.circular(AppRadius.inputs - 2),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(vertical: 10.0),
-                                decoration: BoxDecoration(
-                                  color: !state.isCashWalletToggle
-                                      ? AppColors.surfaceContainerLowest
-                                      : Colors.transparent,
-                                  borderRadius: BorderRadius.circular(AppRadius.inputs - 2),
-                                  boxShadow: !state.isCashWalletToggle
-                                      ? [
-                                          BoxShadow(
-                                            color: Colors.black.withValues(alpha: 0.04),
-                                            blurRadius: 4,
-                                            offset: const Offset(0, 2),
-                                          ),
-                                        ]
-                                      : null,
-                                ),
-                                alignment: Alignment.center,
-                                child: Text(
-                                  'Rekening & Kartu',
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                        color: !state.isCashWalletToggle
-                                            ? AppColors.primary
-                                            : AppColors.onSurfaceVariant,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    item['icon'],
+                                    color: isSelected ? AppColors.primaryContainer : AppColors.outline,
+                                    size: 28.0,
+                                  ),
+                                  const SizedBox(height: 4.0),
+                                  Text(
+                                    item['label'],
+                                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                          color: isSelected ? AppColors.primaryContainer : AppColors.outline,
+                                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                        ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ),
-                        ],
+                          );
+                        }).toList(),
                       ),
                     ),
-                    const SizedBox(height: 32.0),
+                    const SizedBox(height: 24.0),
 
-                    // Initial Balance Area
+                    // Section: Nama Akun
+                    Text(
+                      'NAMA AKUN',
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            color: AppColors.onSurfaceVariant,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.2,
+                          ),
+                    ),
+                    const SizedBox(height: 8.0),
+                    TextFormField(
+                      controller: _nameController,
+                      decoration: InputDecoration(
+                        hintText: 'e.g., BCA Utama',
+                        filled: true,
+                        fillColor: AppColors.surfaceContainerLowest,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                          borderSide: const BorderSide(color: Color(0xFFEBEBEB)),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                          borderSide: const BorderSide(color: Color(0xFFEBEBEB)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                          borderSide: const BorderSide(color: AppColors.primaryContainer, width: 1.5),
+                        ),
+                      ),
+                      onChanged: notifier.setAccountName,
+                    ),
+                    const SizedBox(height: 24.0),
+
+                    // Section: Saldo Awal Display
                     Center(
                       child: Column(
                         children: [
@@ -170,282 +225,237 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
                               Text(
                                 'Rp',
                                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                      color: AppColors.outline,
+                                      color: AppColors.primaryContainer.withValues(alpha: 0.6),
+                                      fontWeight: FontWeight.bold,
                                     ),
                               ),
                               const SizedBox(width: 4.0),
-                              IntrinsicWidth(
-                                child: TextFormField(
-                                  controller: _balanceController,
-                                  keyboardType: TextInputType.number,
-                                  textAlign: TextAlign.center,
-                                  style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                                        color: AppColors.primary,
-                                        fontSize: 48.0,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                  decoration: const InputDecoration(
-                                    border: InputBorder.none,
-                                    hintText: '0',
-                                    contentPadding: EdgeInsets.zero,
-                                  ),
-                                  onChanged: (val) {
-                                    final balance = double.tryParse(val) ?? 0.0;
-                                    notifier.setInitialBalance(balance);
-                                  },
-                                ),
+                              Text(
+                                _formatRupiah(state.balanceString),
+                                style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                                      color: AppColors.primaryContainer,
+                                      fontSize: 40.0,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                               ),
                             ],
+                          ),
+                          const SizedBox(height: 8.0),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 32.0),
+                            child: Text(
+                              'Saldo awal = saldo saat ini di akun kamu. Akan dihitung ulang otomatis setelah transaksi masuk.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: AppColors.outline,
+                                fontSize: 11.0,
+                              ),
+                            ),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 32.0),
+                    const SizedBox(height: 24.0),
 
-                    // Form Fields
+                    // Section: Warna Aksen
                     Text(
-                      'Nama Akun',
-                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      'WARNA AKSEN',
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
                             color: AppColors.onSurfaceVariant,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.2,
                           ),
                     ),
-                    const SizedBox(height: 8.0),
-                    TextFormField(
-                      controller: _nameController,
-                      decoration: InputDecoration(
-                        hintText: 'Contoh: Dompet Utama, Gopay',
-                        prefixIcon: const Icon(Icons.edit, color: AppColors.outline),
-                        filled: true,
-                        fillColor: AppColors.surfaceContainerLowest,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(AppRadius.inputs),
-                          borderSide: const BorderSide(color: AppColors.surfaceDim),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(AppRadius.inputs),
-                          borderSide: const BorderSide(color: AppColors.primary, width: 2.0),
-                        ),
+                    const SizedBox(height: 12.0),
+                    GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 5,
+                        mainAxisSpacing: 12.0,
+                        crossAxisSpacing: 12.0,
+                        childAspectRatio: 1.0,
                       ),
-                      onChanged: notifier.setAccountName,
-                    ),
-                    const SizedBox(height: 20.0),
-
-                    Text(
-                      'Jenis Dompet',
-                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                            color: AppColors.onSurfaceVariant,
-                            fontWeight: FontWeight.w600,
+                      itemCount: colorsList.length,
+                      itemBuilder: (context, index) {
+                        final hex = colorsList[index];
+                        final colorVal = Color(int.parse(hex.replaceAll('#', '0xFF')));
+                        final isSelected = state.selectedColor == hex;
+                        return GestureDetector(
+                          onTap: () => notifier.setColor(hex),
+                          child: Center(
+                            child: Container(
+                              width: 40.0,
+                              height: 40.0,
+                              decoration: BoxDecoration(
+                                color: colorVal,
+                                shape: BoxShape.circle,
+                                border: isSelected
+                                    ? Border.all(
+                                        color: AppColors.primaryContainer,
+                                        width: 2.0,
+                                      )
+                                    : null,
+                              ),
+                              child: isSelected
+                                  ? const Icon(
+                                      Icons.check,
+                                      color: Colors.white,
+                                      size: 20.0,
+                                    )
+                                  : null,
+                            ),
                           ),
-                    ),
-                    const SizedBox(height: 8.0),
-                    DropdownButtonFormField<String>(
-                      value: state.walletType,
-                      decoration: InputDecoration(
-                        prefixIcon: const Icon(Icons.account_balance_wallet, color: AppColors.outline),
-                        filled: true,
-                        fillColor: AppColors.surfaceContainerLowest,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(AppRadius.inputs),
-                          borderSide: const BorderSide(color: AppColors.surfaceDim),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(AppRadius.inputs),
-                          borderSide: const BorderSide(color: AppColors.primary, width: 2.0),
-                        ),
-                      ),
-                      items: state.isCashWalletToggle
-                          ? const [
-                              DropdownMenuItem(value: 'cash', child: Text('Tunai (Cash)')),
-                              DropdownMenuItem(value: 'ewallet', child: Text('E-Wallet')),
-                            ]
-                          : const [
-                              DropdownMenuItem(value: 'bank', child: Text('Bank Transfer')),
-                              DropdownMenuItem(value: 'credit_card', child: Text('Kartu Kredit')),
-                              DropdownMenuItem(value: 'savings', child: Text('Tabungan')),
-                            ],
-                      onChanged: (val) {
-                        if (val != null) {
-                          notifier.setWalletType(val);
-                        }
+                        );
                       },
                     ),
-                    const SizedBox(height: 32.0),
-
-                    // Icon & Color Picker
-                    Text(
-                      'Ikon & Warna',
-                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                            color: AppColors.onSurfaceVariant,
-                            fontWeight: FontWeight.w600,
-                          ),
-                    ),
-                    const SizedBox(height: 8.0),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: AppColors.surfaceContainerLowest,
-                        borderRadius: BorderRadius.circular(AppRadius.inputs),
-                        border: Border.all(color: AppColors.surfaceDim),
-                      ),
-                      padding: const EdgeInsets.all(16.0),
-                      child: Row(
-                        children: [
-                          // Preview
-                          Container(
-                            width: 48.0,
-                            height: 48.0,
-                            decoration: BoxDecoration(
-                              color: Color(int.parse(
-                                      state.selectedColor.replaceAll('#', '0xFF')))
-                                  .withValues(alpha: 0.15),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              getIconData(state.selectedIcon),
-                              color: Color(int.parse(
-                                  state.selectedColor.replaceAll('#', '0xFF'))),
-                              size: 24.0,
-                            ),
-                          ),
-                          const SizedBox(width: 16.0),
-                          Container(
-                            width: 1.0,
-                            height: 32.0,
-                            color: AppColors.surfaceVariant,
-                          ),
-                          const SizedBox(width: 16.0),
-                          // Scroll List
-                          Expanded(
-                            child: SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                children: [
-                                  // Color swatches
-                                  ...colorsList.map((hex) {
-                                    final isSelected = state.selectedColor == hex;
-                                    return GestureDetector(
-                                      onTap: () => notifier.setColor(hex),
-                                      child: Container(
-                                        margin: const EdgeInsets.only(right: 12.0),
-                                        width: 40.0,
-                                        height: 40.0,
-                                        decoration: BoxDecoration(
-                                          color: Color(int.parse(
-                                              hex.replaceAll('#', '0xFF'))),
-                                          shape: BoxShape.circle,
-                                          border: isSelected
-                                              ? Border.all(
-                                                  color: AppColors.primary,
-                                                  width: 2.0,
-                                                )
-                                              : null,
-                                        ),
-                                      ),
-                                    );
-                                  }),
-                                  Container(
-                                    margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                                    width: 1.0,
-                                    height: 24.0,
-                                    color: AppColors.surfaceVariant,
-                                  ),
-                                  const SizedBox(width: 12.0),
-                                  // Icon buttons
-                                  ...iconsList.map((iconName) {
-                                    final isSelected = state.selectedIcon == iconName;
-                                    return GestureDetector(
-                                      onTap: () => notifier.setIcon(iconName),
-                                      child: Container(
-                                        margin: const EdgeInsets.only(right: 12.0),
-                                        width: 40.0,
-                                        height: 40.0,
-                                        decoration: BoxDecoration(
-                                          color: isSelected
-                                              ? AppColors.primary.withValues(alpha: 0.1)
-                                              : AppColors.surfaceContainerLow,
-                                          shape: BoxShape.circle,
-                                          border: isSelected
-                                              ? Border.all(
-                                                  color: AppColors.primary,
-                                                  width: 1.0,
-                                                )
-                                              : null,
-                                        ),
-                                        child: Icon(
-                                          getIconData(iconName),
-                                          color: isSelected
-                                              ? AppColors.primary
-                                              : AppColors.onSurfaceVariant,
-                                          size: 20.0,
-                                        ),
-                                      ),
-                                    );
-                                  }),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    const SizedBox(height: 16.0),
                   ],
                 ),
               ),
             ),
 
-            // Fixed Bottom Save Button
+            // Section: Custom Numeric Keypad
             Container(
-              padding: const EdgeInsets.all(16.0),
-              decoration: const BoxDecoration(
-                color: AppColors.background,
-                border: Border(
-                  top: BorderSide(color: AppColors.surfaceVariant),
-                ),
-              ),
-              child: SafeArea(
-                top: false,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primaryContainer,
-                    foregroundColor: Colors.white,
-                    minimumSize: const Size.fromHeight(56.0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(AppRadius.buttons),
-                    ),
-                    elevation: 0,
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              color: Colors.transparent,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Keypad Grid 3x4
+                  Table(
+                    children: [
+                      TableRow(
+                        children: [
+                          _buildKeypadButton('1', () => notifier.appendBalance('1')),
+                          _buildKeypadButton('2', () => notifier.appendBalance('2')),
+                          _buildKeypadButton('3', () => notifier.appendBalance('3')),
+                        ],
+                      ),
+                      TableRow(
+                        children: [
+                          _buildKeypadButton('4', () => notifier.appendBalance('4')),
+                          _buildKeypadButton('5', () => notifier.appendBalance('5')),
+                          _buildKeypadButton('6', () => notifier.appendBalance('6')),
+                        ],
+                      ),
+                      TableRow(
+                        children: [
+                          _buildKeypadButton('7', () => notifier.appendBalance('7')),
+                          _buildKeypadButton('8', () => notifier.appendBalance('8')),
+                          _buildKeypadButton('9', () => notifier.appendBalance('9')),
+                        ],
+                      ),
+                      TableRow(
+                        children: [
+                          _buildKeypadButton('000', () => notifier.appendBalance('000')),
+                          _buildKeypadButton('0', () => notifier.appendBalance('0')),
+                          _buildKeypadButton(
+                            'backspace',
+                            () => notifier.removeLastBalanceDigit(),
+                            isIcon: true,
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                  onPressed: state.isSaving
-                      ? null
-                      : () async {
-                          final success = await notifier.saveAccount();
-                          if (context.mounted) {
-                            if (success) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Akun berhasil disimpan')),
-                              );
-                              Navigator.of(context).pop();
-                            } else if (state.errorMessage != null) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(state.errorMessage!)),
-                              );
+                  const SizedBox(height: 16.0),
+
+                  // Button Simpan
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF2A6F6F), // Teal warna dari mockup
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size.fromHeight(50.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14.0),
+                      ),
+                      elevation: 0,
+                    ),
+                    onPressed: state.isSaving
+                        ? null
+                        : () async {
+                            final success = await notifier.saveAccount();
+                            if (context.mounted) {
+                              if (success) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Akun berhasil disimpan')),
+                                );
+                                Navigator.of(context).pop();
+                              } else if (state.errorMessage != null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(state.errorMessage!)),
+                                );
+                              }
                             }
-                          }
-                        },
-                  child: state.isSaving
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : Text(
-                          'Simpan Akun',
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                        ),
-                ),
+                          },
+                    child: state.isSaving
+                        ? const SizedBox(
+                            width: 20.0,
+                            height: 20.0,
+                            child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.0),
+                          )
+                        : const Text(
+                            'Simpan Akun',
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                  ),
+                  const SizedBox(height: 8.0),
+
+                  // Button Hapus (Desain mockup untuk Edit mode)
+                  TextButton(
+                    onPressed: () {
+                      // Optional: action hapus
+                    },
+                    child: const Text(
+                      'Hapus Akun',
+                      style: TextStyle(
+                        color: Color(0xFFC96B5A),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8.0),
+                ],
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildKeypadButton(String label, VoidCallback onTap, {bool isIcon = false}) {
+    return TableCell(
+      child: Padding(
+        padding: const EdgeInsets.all(4.0),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(12.0),
+          child: Container(
+            height: 48.0,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12.0),
+            ),
+            child: isIcon
+                ? const Icon(
+                    Icons.backspace_outlined,
+                    color: AppColors.onSurface,
+                    size: 20.0,
+                  )
+                : Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: label == '000' ? 16.0 : 22.0,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.onSurface,
+                    ),
+                  ),
+          ),
         ),
       ),
     );

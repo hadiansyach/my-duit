@@ -1,8 +1,8 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'database.dart';
-import 'daos/wallets_dao.dart';
-import 'daos/transactions_dao.dart';
-import 'daos/categories_dao.dart';
+import 'package:my_duit/data/local/database.dart';
+import 'package:my_duit/data/local/daos/wallets_dao.dart';
+import 'package:my_duit/data/local/daos/transactions_dao.dart';
+import 'package:my_duit/data/local/daos/categories_dao.dart';
 
 part 'database_providers.g.dart';
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../viewmodel/transaction_providers.dart';
-import 'transaction_item_card.dart';
+import 'package:my_duit/features/transactions/presentation/viewmodel/transaction_providers.dart';
+import 'package:my_duit/features/transactions/presentation/view/widgets/transaction_item_card.dart';
 
 class TransactionDailyGroup extends StatelessWidget {
   final String dateLabel;

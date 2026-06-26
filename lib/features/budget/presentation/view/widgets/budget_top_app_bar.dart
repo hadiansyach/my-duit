@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_duit/features/budget/presentation/view/budget_type_selection_page.dart';
 
 class BudgetTopAppBar extends StatelessWidget implements PreferredSizeWidget {
   const BudgetTopAppBar({super.key});
@@ -33,7 +34,12 @@ class BudgetTopAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
             InkWell(
               onTap: () {
-                // Add budget action
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const BudgetTypeSelectionPage(),
+                  ),
+                );
               },
               borderRadius: BorderRadius.circular(20.0),
               child: Container(

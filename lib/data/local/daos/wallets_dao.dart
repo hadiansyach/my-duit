@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
-import '../database.dart';
-import '../tables/wallets.dart';
+import 'package:my_duit/data/local/database.dart';
+import 'package:my_duit/data/local/tables/wallets.dart';
 
 part 'wallets_dao.g.dart';
 

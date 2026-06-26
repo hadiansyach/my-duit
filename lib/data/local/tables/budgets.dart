@@ -1,5 +1,5 @@
 import 'package:drift/drift.dart';
-import 'categories.dart';
+import 'package:my_duit/data/local/tables/categories.dart';
 
 class Budgets extends Table {
   IntColumn get id => integer().autoIncrement()();

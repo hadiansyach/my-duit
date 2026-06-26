@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import '../providers/home_providers.dart';
+import 'package:my_duit/features/home/presentation/providers/home_providers.dart';
 
 class RecentTransactionsList extends ConsumerWidget {
   const RecentTransactionsList({super.key});

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:my_duit/core/theme/app_radius.dart';
-import 'widgets/more_top_app_bar.dart';
-import 'widgets/user_profile_card.dart';
-import 'widgets/quick_action_grid.dart';
-import 'widgets/upgrade_promo_card.dart';
-import 'widgets/settings_item_tile.dart';
+import 'package:my_duit/features/more/presentation/view/widgets/more_top_app_bar.dart';
+import 'package:my_duit/features/more/presentation/view/widgets/user_profile_card.dart';
+import 'package:my_duit/features/more/presentation/view/widgets/quick_action_grid.dart';
+import 'package:my_duit/features/more/presentation/view/widgets/upgrade_promo_card.dart';
+import 'package:my_duit/features/more/presentation/view/widgets/settings_item_tile.dart';
 
 class MorePage extends StatelessWidget {
   const MorePage({super.key});
