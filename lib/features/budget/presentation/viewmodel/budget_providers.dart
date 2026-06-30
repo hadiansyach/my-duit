@@ -1,4 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_duit/features/budget/domain/models/budget_models.dart';
 
 part 'budget_providers.g.dart';
@@ -167,7 +168,7 @@ class BudgetCategoriesNotifier extends _$BudgetCategoriesNotifier {
 
 
 @riverpod
-BudgetSummaryModel budgetSummary(BudgetSummaryRef ref) {
+BudgetSummaryModel budgetSummary(Ref ref) {
   final period = ref.watch(budgetPeriodFilterProvider);
   final categories = ref.watch(budgetCategoriesNotifierProvider);
 

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:my_duit/shared/widgets/numeric_keypad.dart';
+import 'package:my_duit/shared/widgets/custom_numeric_keypad.dart';
+import 'package:my_duit/features/categories/presentation/view/widgets/add_category_bottom_sheet.dart';
 import 'package:my_duit/features/budget/presentation/viewmodel/budget_providers.dart';
 import 'package:my_duit/features/categories/presentation/viewmodel/categories_provider.dart';
 import 'package:my_duit/features/categories/domain/utils/category_assets.dart';
@@ -193,8 +194,59 @@ class _AddBudgetPageState extends ConsumerState<AddBudgetPage> {
                               return ListView.builder(
                                 scrollDirection: Axis.horizontal,
                                 physics: const BouncingScrollPhysics(),
-                                itemCount: expenseCategories.length,
+                                itemCount: expenseCategories.length + 1,
                                 itemBuilder: (context, index) {
+                                  if (index == expenseCategories.length) {
+                                    return Padding(
+                                      padding: const EdgeInsets.only(right: 16.0),
+                                      child: GestureDetector(
+                                        onTap: () async {
+                                          final success = await AddCategoryBottomSheet.show(
+                                            context,
+                                            initialType: 'expense',
+                                          );
+                                          if (success == true) {
+                                            // The watchCategoriesProvider will automatically rebuild with the new category
+                                          }
+                                        },
+                                        child: Column(
+                                          children: [
+                                            Container(
+                                              width: 52.0,
+                                              height: 52.0,
+                                              decoration: BoxDecoration(
+                                                color: Colors.transparent,
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                  color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+                                                  width: 1.5,
+                                                ),
+                                              ),
+                                              child: Icon(
+                                                Icons.add,
+                                                color: theme.colorScheme.outline,
+                                                size: 24.0,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 4.0),
+                                            SizedBox(
+                                              width: 64.0,
+                                              child: Text(
+                                                'Tambah',
+                                                textAlign: TextAlign.center,
+                                                style: theme.textTheme.labelSmall?.copyWith(
+                                                  color: theme.colorScheme.outline,
+                                                ),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  }
+
                                   final cat = expenseCategories[index];
                                   final isSelected = _selectedCategory?.id == cat.id;
 
@@ -467,9 +519,9 @@ class _AddBudgetPageState extends ConsumerState<AddBudgetPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  NumericKeypad(
-                    onKeyPressed: _appendDigit,
-                    onBackspacePressed: _backspace,
+                  CustomNumericKeypad(
+                    onKeyPress: _appendDigit,
+                    onBackspace: _backspace,
                   ),
                   const SizedBox(height: 16.0),
                   SizedBox(

@@ -1,156 +1,59 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_duit/features/transactions/presentation/viewmodel/transaction_filter_provider.dart';
-
-class TransactionModel {
-  final String id;
-  final String title;
-  final String category;
-  final String subtitle;
-  final double amount;
-  final bool isIncome;
-  final String iconName;
-  final String dateLabel; // e.g. "Hari Ini, 24 Okt" or "Kemarin, 23 Okt"
-  final DateTime date;
-  final String? walletId;
-  final String? walletName;
-
-  const TransactionModel({
-    required this.id,
-    required this.title,
-    required this.category,
-    required this.subtitle,
-    required this.amount,
-    required this.isIncome,
-    required this.iconName,
-    required this.dateLabel,
-    required this.date,
-    this.walletId,
-    this.walletName,
-  });
-}
+import 'package:my_duit/features/transactions/domain/entities/transaction_entity.dart';
+import 'package:my_duit/data/local/database_providers.dart';
 
 // Search Query Provider
 final transactionSearchQueryProvider = StateProvider<String>((ref) => '');
 
-// Filter Type Provider (Forwarded to our new unified filter provider for backwards compatibility if needed)
+// Filter Type Provider
 final transactionTypeFilterProvider = StateProvider<String>((ref) => 'Semua');
 
-// Raw Dummy Transactions Provider
-final transactionsListProvider = Provider<List<TransactionModel>>((ref) {
-  final now = DateTime.now();
-  final today = DateTime(now.year, now.month, now.day);
-  final yesterday = today.subtract(const Duration(days: 1));
-  final twoDaysAgo = today.subtract(const Duration(days: 2));
+final transactionLimitProvider = StateProvider<int>((ref) => 30);
 
-  return [
-    TransactionModel(
-      id: '1',
-      title: 'Kopi Kenangan',
-      category: 'Makan & Minum',
-      subtitle: 'Makan & Minum • 10:15',
-      amount: 35000,
-      isIncome: false,
-      iconName: 'local_cafe',
-      dateLabel: 'Hari Ini',
-      date: now,
-      walletId: '1',
-      walletName: 'Dompet Utama',
-    ),
-    TransactionModel(
-      id: '2',
-      title: 'Gaji Bulanan',
-      category: 'Gaji',
-      subtitle: 'Gaji • 09:00',
-      amount: 5000000,
-      isIncome: true,
-      iconName: 'account_balance_wallet',
-      dateLabel: 'Hari Ini',
-      date: now,
-      walletId: '2',
-      walletName: 'Bank Mandiri',
-    ),
-    TransactionModel(
-      id: '3',
-      title: 'Gojek',
-      category: 'Transportasi',
-      subtitle: 'Transportasi • 14:30',
-      amount: 15000,
-      isIncome: false,
-      iconName: 'directions_car',
-      dateLabel: 'Hari Ini',
-      date: now,
-      walletId: '3',
-      walletName: 'Gopay',
-    ),
-    TransactionModel(
-      id: '4',
-      title: 'Makan Siang Padang',
-      category: 'Makan & Minum',
-      subtitle: 'Makan & Minum • Kemarin',
-      amount: 25000,
-      isIncome: false,
-      iconName: 'restaurant',
-      dateLabel: 'Kemarin',
-      date: yesterday,
-      walletId: '1',
-      walletName: 'Dompet Utama',
-    ),
-    TransactionModel(
-      id: '5',
-      title: 'Tokopedia Belanja',
-      category: 'Belanja',
-      subtitle: 'Belanja • Kemarin',
-      amount: 160000,
-      isIncome: false,
-      iconName: 'shopping_bag',
-      dateLabel: 'Kemarin',
-      date: yesterday,
-      walletId: '2',
-      walletName: 'Bank Mandiri',
-    ),
-    TransactionModel(
-      id: '6',
-      title: 'Transfer Teman',
-      category: 'Freelance',
-      subtitle: 'Freelance • 22 Okt',
-      amount: 150000,
-      isIncome: true,
-      iconName: 'arrow_downward',
-      dateLabel: '2 hari lalu',
-      date: twoDaysAgo,
-      walletId: '3',
-      walletName: 'Gopay',
-    ),
-    TransactionModel(
-      id: '7',
-      title: 'Tagihan Listrik',
-      category: 'Tagihan',
-      subtitle: 'Tagihan • 22 Okt',
-      amount: 280000,
-      isIncome: false,
-      iconName: 'electric_bolt',
-      dateLabel: '2 hari lalu',
-      date: twoDaysAgo,
-      walletId: '2',
-      walletName: 'Bank Mandiri',
-    ),
-  ];
+// Raw Transactions Provider (from Drift)
+final transactionsListProvider = StreamProvider<List<TransactionEntity>>((ref) {
+  final dao = ref.watch(transactionsDaoProvider);
+  final limit = ref.watch(transactionLimitProvider);
+  return dao.watchTransactionsPaged(limit: limit, offset: 0).map((list) {
+    return list.map((item) {
+      DateTime dt;
+      try {
+        dt = DateTime.parse(item.transaction.date);
+      } catch (_) {
+        dt = DateTime.now();
+      }
+      
+      return TransactionEntity(
+        id: item.transaction.id,
+        amount: item.transaction.amount,
+        type: item.transaction.type,
+        date: dt,
+        categoryName: item.category?.name,
+        walletName: item.wallet.name,
+        toWalletName: item.toWallet?.name,
+        notes: item.transaction.notes,
+        iconName: item.category?.icon,
+        walletId: item.wallet.id,
+      );
+    }).toList();
+  });
 });
 
 // Grouped and Filtered Transactions Provider
-final filteredGroupedTransactionsProvider = Provider<Map<String, List<TransactionModel>>>((ref) {
-  final transactions = ref.watch(transactionsListProvider);
+final filteredGroupedTransactionsProvider = Provider<Map<String, List<TransactionEntity>>>((ref) {
+  final transactions = ref.watch(transactionsListProvider).valueOrNull ?? [];
   final query = ref.watch(transactionSearchQueryProvider).toLowerCase();
   final filter = ref.watch(transactionFilterProvider);
 
   // 1. Filter
   final filtered = transactions.where((tx) {
     // Search query matching
-    final matchesQuery = tx.title.toLowerCase().contains(query) ||
-        tx.category.toLowerCase().contains(query) ||
-        tx.subtitle.toLowerCase().contains(query);
-
-    if (!matchesQuery) return false;
+    final titleMatch = tx.title.toLowerCase().contains(query);
+    final catMatch = (tx.categoryName ?? '').toLowerCase().contains(query);
+    final subtitleMatch = tx.subtitle.toLowerCase().contains(query);
+    
+    if (!titleMatch && !catMatch && !subtitleMatch) return false;
 
     // Type filter matching
     if (filter.transactionType != 'Semua') {
@@ -160,19 +63,18 @@ final filteredGroupedTransactionsProvider = Provider<Map<String, List<Transactio
       if (filter.transactionType == 'Pengeluaran' && tx.isIncome) {
         return false;
       }
-      // Note: we don't have transfer specific mock txs, but we can treat non-income as expense/transfer
     }
 
     // Category filter matching
     if (filter.selectedCategory != null) {
-      if (tx.category != filter.selectedCategory) {
+      if (tx.categoryName != filter.selectedCategory) { // Using category name for simplicity here
         return false;
       }
     }
 
     // Wallet filter matching
     if (filter.selectedWalletId != null) {
-      if (tx.walletId != filter.selectedWalletId) {
+      if (tx.walletId.toString() != filter.selectedWalletId) {
         return false;
       }
     }
@@ -200,15 +102,35 @@ final filteredGroupedTransactionsProvider = Provider<Map<String, List<Transactio
     return true;
   }).toList();
 
-  // 2. Group by dateLabel (preserving insertion order of mock data)
-  final Map<String, List<TransactionModel>> grouped = {};
+  // 2. Group by dateLabel
+  final Map<String, List<TransactionEntity>> grouped = {};
+  final now = DateTime.now();
+  final today = DateTime(now.year, now.month, now.day);
+  final yesterday = today.subtract(const Duration(days: 1));
+  
   for (final tx in filtered) {
-    if (!grouped.containsKey(tx.dateLabel)) {
-      grouped[tx.dateLabel] = [];
+    final txDay = DateTime(tx.date.year, tx.date.month, tx.date.day);
+    String dateLabel = '';
+    
+    if (txDay == today) {
+      dateLabel = 'Hari Ini';
+    } else if (txDay == yesterday) {
+      dateLabel = 'Kemarin';
+    } else {
+      dateLabel = '${tx.date.day} ${_getMonthName(tx.date.month)} ${tx.date.year}';
     }
-    grouped[tx.dateLabel]!.add(tx);
+    
+    if (!grouped.containsKey(dateLabel)) {
+      grouped[dateLabel] = [];
+    }
+    grouped[dateLabel]!.add(tx);
   }
 
   return grouped;
 });
+
+String _getMonthName(int month) {
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'];
+  return months[month - 1];
+}
 

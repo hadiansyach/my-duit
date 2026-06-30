@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:my_duit/features/transactions/presentation/viewmodel/transaction_providers.dart';
+import 'package:my_duit/features/transactions/domain/entities/transaction_entity.dart';
 import 'package:my_duit/features/transactions/presentation/view/widgets/transaction_item_card.dart';
 
 class TransactionDailyGroup extends StatelessWidget {
   final String dateLabel;
-  final List<TransactionModel> transactions;
+  final List<TransactionEntity> transactions;
 
   const TransactionDailyGroup({
     super.key,

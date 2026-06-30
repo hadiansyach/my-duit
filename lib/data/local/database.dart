@@ -42,6 +42,45 @@ class AppDatabase extends _$AppDatabase {
 
   @override
   int get schemaVersion => 1;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    beforeOpen: (details) async {
+      await customStatement('PRAGMA foreign_keys = ON');
+      
+      final walletsCount = await select(wallets).get().then((v) => v.length);
+      if (walletsCount == 0) {
+        final now = DateTime.now().toIso8601String();
+        await into(wallets).insert(WalletsCompanion.insert(
+          name: 'Dompet Utama',
+          type: 'cash',
+          initialBalance: const Value(500000.0),
+          color: const Value('#2A6F6F'),
+          icon: const Value('payments'),
+          isActive: const Value(1),
+          createdAt: now,
+        ));
+        await into(wallets).insert(WalletsCompanion.insert(
+          name: 'Bank Mandiri',
+          type: 'bank',
+          initialBalance: const Value(2500000.0),
+          color: const Value('#8F573A'),
+          icon: const Value('account_balance'),
+          isActive: const Value(1),
+          createdAt: now,
+        ));
+        await into(wallets).insert(WalletsCompanion.insert(
+          name: 'Gopay',
+          type: 'ewallet',
+          initialBalance: const Value(150000.0),
+          color: const Value('#C99C8D'),
+          icon: const Value('smartphone'),
+          isActive: const Value(1),
+          createdAt: now,
+        ));
+      }
+    },
+  );
 }
 
 LazyDatabase _openConnection() {

@@ -2,21 +2,47 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:my_duit/features/budget/presentation/viewmodel/budget_providers.dart';
-import 'package:my_duit/features/budget/domain/models/budget_models.dart';
 import 'package:my_duit/features/transactions/presentation/viewmodel/transaction_providers.dart';
 import 'package:my_duit/core/theme/app_semantic_colors.dart';
+import 'package:my_duit/features/budget/presentation/view/update_budget_limit_page.dart';
 
 class BudgetDetailPage extends ConsumerWidget {
   final String budgetId;
 
-  const BudgetDetailPage({
-    super.key,
-    required this.budgetId,
-  });
+  const BudgetDetailPage({super.key, required this.budgetId});
 
-  bool _matchesCategory(String txCategory, String budgetCategory) {
-    if (budgetCategory == 'Makanan' && txCategory == 'Makan & Minum') return true;
+  bool _matchesCategory(String? txCategory, String budgetCategory) {
+    if (txCategory == null) return false;
+    if (budgetCategory == 'Makanan' && txCategory == 'Makan & Minum') {
+      return true;
+    }
     return txCategory.toLowerCase() == budgetCategory.toLowerCase();
+  }
+
+  String _getDateLabel(DateTime date) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = today.subtract(const Duration(days: 1));
+    final txDay = DateTime(date.year, date.month, date.day);
+
+    if (txDay == today) return 'Hari Ini';
+    if (txDay == yesterday) return 'Kemarin';
+
+    final months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'Mei',
+      'Jun',
+      'Jul',
+      'Agt',
+      'Sep',
+      'Okt',
+      'Nov',
+      'Des',
+    ];
+    return '${date.day} ${months[date.month - 1]} ${date.year}';
   }
 
   IconData _getIconData(String name) {
@@ -34,82 +60,6 @@ class BudgetDetailPage extends ConsumerWidget {
       default:
         return Icons.category;
     }
-  }
-
-  void _showEditLimitDialog(BuildContext context, WidgetRef ref, BudgetCategoryModel budget) {
-    final controller = TextEditingController(text: budget.limitAmount.toInt().toString());
-    final theme = Theme.of(context);
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          backgroundColor: theme.colorScheme.surface,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24.0),
-          ),
-          title: Text(
-            'Ubah Limit Anggaran',
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: theme.colorScheme.onSurface,
-            ),
-          ),
-          content: TextField(
-            controller: controller,
-            keyboardType: TextInputType.number,
-            autofocus: true,
-            decoration: InputDecoration(
-              prefixText: 'Rp ',
-              prefixStyle: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.onSurface,
-              ),
-              hintText: 'Masukkan limit baru',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16.0),
-              ),
-            ),
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: theme.colorScheme.onSurface,
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(
-                'Batal',
-                style: TextStyle(color: theme.colorScheme.outline),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                final newLimit = double.tryParse(controller.text) ?? 0.0;
-                if (newLimit > 0) {
-                  ref.read(budgetCategoriesNotifierProvider.notifier).updateLimit(budget.id, newLimit);
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Limit anggaran ${budget.name} berhasil diperbarui'),
-                      behavior: SnackBarBehavior.floating,
-                    ),
-                  );
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: theme.colorScheme.primary,
-                foregroundColor: theme.colorScheme.onPrimary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
-              ),
-              child: const Text('Simpan'),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
@@ -134,8 +84,11 @@ class BudgetDetailPage extends ConsumerWidget {
     );
 
     // Filter transactions matching this category
-    final allTransactions = ref.watch(transactionsListProvider);
-    final categoryTransactions = allTransactions.where((tx) => _matchesCategory(tx.category, budget.name)).toList();
+    final allTransactions =
+        ref.watch(transactionsListProvider).valueOrNull ?? [];
+    final categoryTransactions = allTransactions
+        .where((tx) => _matchesCategory(tx.categoryName, budget.name))
+        .toList();
 
     final remaining = budget.remaining;
     final isOver = remaining < 0;
@@ -170,7 +123,14 @@ class BudgetDetailPage extends ConsumerWidget {
         actions: [
           IconButton(
             icon: Icon(Icons.edit_outlined, color: theme.colorScheme.onSurface),
-            onPressed: () => _showEditLimitDialog(context, ref, budget),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => UpdateBudgetLimitPage(budget: budget),
+                ),
+              );
+            },
           ),
           const SizedBox(width: 8.0),
         ],
@@ -263,7 +223,9 @@ class BudgetDetailPage extends ConsumerWidget {
                                   ? '-${currencyFormatter.format(remaining.abs())}'
                                   : currencyFormatter.format(remaining),
                               style: theme.textTheme.headlineMedium?.copyWith(
-                                color: isOver ? semanticColors.danger : theme.colorScheme.primary,
+                                color: isOver
+                                    ? semanticColors.danger
+                                    : theme.colorScheme.primary,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -275,8 +237,11 @@ class BudgetDetailPage extends ConsumerWidget {
                               child: LinearProgressIndicator(
                                 value: percent.clamp(0.0, 1.0),
                                 minHeight: 8.0,
-                                backgroundColor: theme.colorScheme.surfaceContainerHighest,
-                                valueColor: AlwaysStoppedAnimation<Color>(statusColor),
+                                backgroundColor:
+                                    theme.colorScheme.surfaceContainerHighest,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  statusColor,
+                                ),
                               ),
                             ),
                             const SizedBox(height: 8.0),
@@ -310,7 +275,8 @@ class BudgetDetailPage extends ConsumerWidget {
                                 color: theme.colorScheme.surface,
                                 borderRadius: BorderRadius.circular(16.0),
                                 border: Border.all(
-                                  color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
+                                  color: theme.colorScheme.outlineVariant
+                                      .withValues(alpha: 0.3),
                                 ),
                               ),
                               child: Row(
@@ -333,14 +299,18 @@ class BudgetDetailPage extends ConsumerWidget {
                                     child: RichText(
                                       text: TextSpan(
                                         text: 'Rata-rata pengeluaran ',
-                                        style: theme.textTheme.labelMedium?.copyWith(
-                                          color: theme.colorScheme.onSurfaceVariant,
-                                        ),
+                                        style: theme.textTheme.labelMedium
+                                            ?.copyWith(
+                                              color: theme
+                                                  .colorScheme
+                                                  .onSurfaceVariant,
+                                            ),
                                         children: [
                                           TextSpan(
                                             text: 'Rp120.000 / hari',
                                             style: TextStyle(
-                                              color: theme.colorScheme.onSurface,
+                                              color:
+                                                  theme.colorScheme.onSurface,
                                               fontWeight: FontWeight.bold,
                                             ),
                                           ),
@@ -401,50 +371,67 @@ class BudgetDetailPage extends ConsumerWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    width: 44.0,
-                                    height: 44.0,
-                                    decoration: BoxDecoration(
-                                      color: theme.colorScheme.surfaceContainer,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Icon(
-                                      tx.iconName == 'local_cafe'
-                                          ? Icons.local_cafe
-                                          : tx.iconName == 'shopping_bag'
-                                              ? Icons.shopping_bag
-                                              : tx.iconName == 'restaurant'
-                                                  ? Icons.restaurant
-                                                  : tx.iconName == 'directions_car'
-                                                      ? Icons.directions_car
-                                                      : Icons.bolt,
-                                      color: theme.colorScheme.onSurfaceVariant,
-                                      size: 20.0,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12.0),
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        tx.title,
-                                        style: theme.textTheme.bodyMedium?.copyWith(
-                                          color: theme.colorScheme.onSurface,
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                              Expanded(
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 44.0,
+                                      height: 44.0,
+                                      decoration: BoxDecoration(
+                                        color:
+                                            theme.colorScheme.surfaceContainer,
+                                        shape: BoxShape.circle,
                                       ),
-                                      Text(
-                                        '${tx.dateLabel}, ${DateFormat('HH:mm').format(tx.date)}',
-                                        style: theme.textTheme.labelSmall?.copyWith(
-                                          color: theme.colorScheme.outline,
-                                        ),
+                                      child: Icon(
+                                        tx.iconName == 'local_cafe'
+                                            ? Icons.local_cafe
+                                            : tx.iconName == 'shopping_bag'
+                                            ? Icons.shopping_bag
+                                            : tx.iconName == 'restaurant'
+                                            ? Icons.restaurant
+                                            : tx.iconName == 'directions_car'
+                                            ? Icons.directions_car
+                                            : Icons.bolt,
+                                        color:
+                                            theme.colorScheme.onSurfaceVariant,
+                                        size: 20.0,
                                       ),
-                                    ],
-                                  ),
-                                ],
+                                    ),
+                                    const SizedBox(width: 12.0),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            tx.title,
+                                            style: theme.textTheme.bodyMedium
+                                                ?.copyWith(
+                                                  color: theme
+                                                      .colorScheme
+                                                      .onSurface,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          Text(
+                                            '${_getDateLabel(tx.date)}, ${DateFormat('HH:mm').format(tx.date)}',
+                                            style: theme.textTheme.labelSmall
+                                                ?.copyWith(
+                                                  color:
+                                                      theme.colorScheme.outline,
+                                                ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
+                              const SizedBox(width: 16.0),
                               Text(
                                 '-${currencyFormatter.format(tx.amount)}',
                                 style: theme.textTheme.bodyMedium?.copyWith(
@@ -471,9 +458,20 @@ class BudgetDetailPage extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   OutlinedButton(
-                    onPressed: () => _showEditLimitDialog(context, ref, budget),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              UpdateBudgetLimitPage(budget: budget),
+                        ),
+                      );
+                    },
                     style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: theme.colorScheme.outlineVariant, width: 2.0),
+                      side: BorderSide(
+                        color: theme.colorScheme.outlineVariant,
+                        width: 2.0,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(99.0),
                       ),
@@ -500,25 +498,44 @@ class BudgetDetailPage extends ConsumerWidget {
                               borderRadius: BorderRadius.circular(20.0),
                             ),
                             title: const Text('Hapus Anggaran?'),
-                            content: Text('Apakah Anda yakin ingin menghapus anggaran ${budget.name}?'),
+                            content: Text(
+                              'Apakah Anda yakin ingin menghapus anggaran ${budget.name}?',
+                            ),
                             actions: [
                               TextButton(
                                 onPressed: () => Navigator.pop(context),
-                                child: Text('Batal', style: TextStyle(color: theme.colorScheme.outline)),
+                                child: Text(
+                                  'Batal',
+                                  style: TextStyle(
+                                    color: theme.colorScheme.outline,
+                                  ),
+                                ),
                               ),
                               TextButton(
                                 onPressed: () {
-                                  ref.read(budgetCategoriesNotifierProvider.notifier).deleteBudget(budget.id);
+                                  ref
+                                      .read(
+                                        budgetCategoriesNotifierProvider
+                                            .notifier,
+                                      )
+                                      .deleteBudget(budget.id);
                                   Navigator.pop(context); // Pop dialog
                                   Navigator.pop(context); // Pop DetailPage
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
-                                      content: Text('Anggaran ${budget.name} berhasil dihapus'),
+                                      content: Text(
+                                        'Anggaran ${budget.name} berhasil dihapus',
+                                      ),
                                       behavior: SnackBarBehavior.floating,
                                     ),
                                   );
                                 },
-                                child: Text('Hapus', style: TextStyle(color: theme.colorScheme.error)),
+                                child: Text(
+                                  'Hapus',
+                                  style: TextStyle(
+                                    color: theme.colorScheme.error,
+                                  ),
+                                ),
                               ),
                             ],
                           );

@@ -2,15 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:my_duit/features/savings/presentation/viewmodel/savings_providers.dart';
-import 'package:my_duit/features/savings/domain/models/savings_goal_model.dart';
+import 'package:my_duit/features/savings/presentation/view/add_savings_contribution_page.dart';
 
 class SavingsDetailPage extends ConsumerWidget {
   final String savingsId;
 
-  const SavingsDetailPage({
-    super.key,
-    required this.savingsId,
-  });
+  const SavingsDetailPage({super.key, required this.savingsId});
 
   IconData _getIconData(String name) {
     switch (name) {
@@ -21,82 +18,6 @@ class SavingsDetailPage extends ConsumerWidget {
       default:
         return Icons.star;
     }
-  }
-
-  void _showAddContributionDialog(BuildContext context, WidgetRef ref, SavingsGoalModel goal) {
-    final controller = TextEditingController();
-    final theme = Theme.of(context);
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          backgroundColor: theme.colorScheme.surface,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24.0),
-          ),
-          title: Text(
-            'Tambah Tabungan',
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: theme.colorScheme.onSurface,
-            ),
-          ),
-          content: TextField(
-            controller: controller,
-            keyboardType: TextInputType.number,
-            autofocus: true,
-            decoration: InputDecoration(
-              prefixText: 'Rp ',
-              prefixStyle: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.onSurface,
-              ),
-              hintText: 'Masukkan jumlah tabungan',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16.0),
-              ),
-            ),
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: theme.colorScheme.onSurface,
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(
-                'Batal',
-                style: TextStyle(color: theme.colorScheme.outline),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                final amount = double.tryParse(controller.text) ?? 0.0;
-                if (amount > 0) {
-                  ref.read(savingsGoalsNotifierProvider.notifier).addContribution(goal.id, amount);
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Berhasil menambah Rp ${NumberFormat.currency(locale: 'id_ID', symbol: '', decimalDigits: 0).format(amount)} ke tabungan'),
-                      behavior: SnackBarBehavior.floating,
-                    ),
-                  );
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: theme.colorScheme.primary,
-                foregroundColor: theme.colorScheme.onPrimary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
-              ),
-              child: const Text('Simpan'),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
@@ -125,9 +46,24 @@ class SavingsDetailPage extends ConsumerWidget {
 
     // Mock contribution history
     final mockContributions = [
-      {'title': 'Tabungan Bulan Ini', 'date': '12 Okt 2023', 'amount': 1000000.0, 'icon': Icons.savings_outlined},
-      {'title': 'Bonus Tahunan', 'date': '28 Sep 2023', 'amount': 1500000.0, 'icon': Icons.account_balance_wallet_outlined},
-      {'title': 'Tabungan Bulan Lalu', 'date': '12 Sep 2023', 'amount': 500000.0, 'icon': Icons.savings_outlined},
+      {
+        'title': 'Tabungan Bulan Ini',
+        'date': '12 Okt 2023',
+        'amount': 1000000.0,
+        'icon': Icons.savings_outlined,
+      },
+      {
+        'title': 'Bonus Tahunan',
+        'date': '28 Sep 2023',
+        'amount': 1500000.0,
+        'icon': Icons.account_balance_wallet_outlined,
+      },
+      {
+        'title': 'Tabungan Bulan Lalu',
+        'date': '12 Sep 2023',
+        'amount': 500000.0,
+        'icon': Icons.savings_outlined,
+      },
     ];
 
     return Scaffold(
@@ -177,10 +113,11 @@ class SavingsDetailPage extends ConsumerWidget {
                         children: [
                           // Network image with premium travel/Japan aesthetics
                           Image.network(
-                            'https://lh3.googleusercontent.com/aida-public/AB6AXuC3q8d_3KPv7IPiuSpa5DMoYszDBhzfwjkbGkCpKYLLU61rqY82p-5Z8QpxHqiBGpSP6gwUHoH2RxqaZFn0Bvgpf7VZ14_m719rrXe7BGdbwstUnHqOPlUu-R10pSNsFcYohOp1713zRCD5FQf0YjUyhMcf30jbUPnaftviM4cH5cXg8yGP4AHvbX98bDe8eLtYlRn2xr76SmB5NlD85ef0nenHKlVEcJPf-nx6qeZGQ0z_5ELbEWiN',
+                            'https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
                             fit: BoxFit.cover,
                             width: double.infinity,
                             height: double.infinity,
+                            cacheWidth: 800,
                             errorBuilder: (context, error, stackTrace) {
                               // Fallback beautiful gradient if offline or image fails to load
                               return Container(
@@ -188,7 +125,9 @@ class SavingsDetailPage extends ConsumerWidget {
                                   gradient: LinearGradient(
                                     colors: [
                                       theme.colorScheme.primary,
-                                      theme.colorScheme.primary.withValues(alpha: 0.7),
+                                      theme.colorScheme.primary.withValues(
+                                        alpha: 0.7,
+                                      ),
                                     ],
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
@@ -305,12 +244,17 @@ class SavingsDetailPage extends ConsumerWidget {
                       const SizedBox(height: 20.0),
                       // Rounded balance display badge
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 10.0),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24.0,
+                          vertical: 10.0,
+                        ),
                         decoration: BoxDecoration(
                           color: theme.colorScheme.surfaceContainerLowest,
                           borderRadius: BorderRadius.circular(99.0),
                           border: Border.all(
-                            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+                            color: theme.colorScheme.outlineVariant.withValues(
+                              alpha: 0.5,
+                            ),
                           ),
                           boxShadow: const [
                             BoxShadow(
@@ -355,7 +299,8 @@ class SavingsDetailPage extends ConsumerWidget {
                             color: theme.colorScheme.surfaceContainerLowest,
                             borderRadius: BorderRadius.circular(16.0),
                             border: Border.all(
-                              color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
+                              color: theme.colorScheme.outlineVariant
+                                  .withValues(alpha: 0.3),
                             ),
                             boxShadow: const [
                               BoxShadow(
@@ -387,7 +332,9 @@ class SavingsDetailPage extends ConsumerWidget {
                                 ],
                               ),
                               Text(
-                                remaining <= 0 ? 'Tercapai' : currencyFormatter.format(remaining),
+                                remaining <= 0
+                                    ? 'Tercapai'
+                                    : currencyFormatter.format(remaining),
                                 style: theme.textTheme.bodyMedium?.copyWith(
                                   color: theme.colorScheme.primary,
                                   fontWeight: FontWeight.bold,
@@ -409,7 +356,8 @@ class SavingsDetailPage extends ConsumerWidget {
                             color: theme.colorScheme.surfaceContainerLowest,
                             borderRadius: BorderRadius.circular(16.0),
                             border: Border.all(
-                              color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
+                              color: theme.colorScheme.outlineVariant
+                                  .withValues(alpha: 0.3),
                             ),
                             boxShadow: const [
                               BoxShadow(
@@ -452,18 +400,27 @@ class SavingsDetailPage extends ConsumerWidget {
                                   ),
                                   const SizedBox(height: 2.0),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 1.0),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 6.0,
+                                      vertical: 1.0,
+                                    ),
                                     decoration: BoxDecoration(
-                                      color: theme.colorScheme.secondaryContainer.withValues(alpha: 0.5),
+                                      color: theme
+                                          .colorScheme
+                                          .secondaryContainer
+                                          .withValues(alpha: 0.5),
                                       borderRadius: BorderRadius.circular(99.0),
                                     ),
                                     child: Text(
                                       'Aktif',
-                                      style: theme.textTheme.labelSmall?.copyWith(
-                                        color: theme.colorScheme.onSecondaryContainer,
-                                        fontSize: 8.0,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                      style: theme.textTheme.labelSmall
+                                          ?.copyWith(
+                                            color: theme
+                                                .colorScheme
+                                                .onSecondaryContainer,
+                                            fontSize: 8.0,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                     ),
                                   ),
                                 ],
@@ -508,7 +465,9 @@ class SavingsDetailPage extends ConsumerWidget {
                       color: theme.colorScheme.surfaceContainerLowest,
                       borderRadius: BorderRadius.circular(18.0),
                       border: Border.all(
-                        color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
+                        color: theme.colorScheme.outlineVariant.withValues(
+                          alpha: 0.3,
+                        ),
                       ),
                       boxShadow: const [
                         BoxShadow(
@@ -526,7 +485,9 @@ class SavingsDetailPage extends ConsumerWidget {
                               width: 36.0,
                               height: 36.0,
                               decoration: BoxDecoration(
-                                color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                                color: theme.colorScheme.primary.withValues(
+                                  alpha: 0.1,
+                                ),
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(
@@ -558,7 +519,8 @@ class SavingsDetailPage extends ConsumerWidget {
                           ),
                           if (i < mockContributions.length - 1)
                             Divider(
-                              color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
+                              color: theme.colorScheme.outlineVariant
+                                  .withValues(alpha: 0.3),
                               height: 1.0,
                               indent: 56.0,
                             ),
@@ -579,7 +541,9 @@ class SavingsDetailPage extends ConsumerWidget {
                 color: theme.colorScheme.surface,
                 border: Border(
                   top: BorderSide(
-                    color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
+                    color: theme.colorScheme.outlineVariant.withValues(
+                      alpha: 0.3,
+                    ),
                   ),
                 ),
               ),
@@ -591,7 +555,14 @@ class SavingsDetailPage extends ConsumerWidget {
                     width: double.infinity,
                     height: 52.0,
                     child: ElevatedButton.icon(
-                      onPressed: () => _showAddContributionDialog(context, ref, goal),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AddSavingsContributionPage(goal: goal),
+                          ),
+                        );
+                      },
                       icon: const Icon(Icons.add),
                       label: const Text('Tambah Tabungan'),
                       style: ElevatedButton.styleFrom(
@@ -617,25 +588,43 @@ class SavingsDetailPage extends ConsumerWidget {
                               borderRadius: BorderRadius.circular(20.0),
                             ),
                             title: const Text('Hapus Target Tabungan?'),
-                            content: Text('Apakah Anda yakin ingin menghapus target tabungan "${goal.name}"?'),
+                            content: Text(
+                              'Apakah Anda yakin ingin menghapus target tabungan "${goal.name}"?',
+                            ),
                             actions: [
                               TextButton(
                                 onPressed: () => Navigator.pop(context),
-                                child: Text('Batal', style: TextStyle(color: theme.colorScheme.outline)),
+                                child: Text(
+                                  'Batal',
+                                  style: TextStyle(
+                                    color: theme.colorScheme.outline,
+                                  ),
+                                ),
                               ),
                               TextButton(
                                 onPressed: () {
-                                  ref.read(savingsGoalsNotifierProvider.notifier).deleteSavingsGoal(goal.id);
+                                  ref
+                                      .read(
+                                        savingsGoalsNotifierProvider.notifier,
+                                      )
+                                      .deleteSavingsGoal(goal.id);
                                   Navigator.pop(context); // Pop dialog
                                   Navigator.pop(context); // Pop DetailPage
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
-                                      content: Text('Target tabungan "${goal.name}" berhasil dihapus'),
+                                      content: Text(
+                                        'Target tabungan "${goal.name}" berhasil dihapus',
+                                      ),
                                       behavior: SnackBarBehavior.floating,
                                     ),
                                   );
                                 },
-                                child: Text('Hapus', style: TextStyle(color: theme.colorScheme.error)),
+                                child: Text(
+                                  'Hapus',
+                                  style: TextStyle(
+                                    color: theme.colorScheme.error,
+                                  ),
+                                ),
                               ),
                             ],
                           );

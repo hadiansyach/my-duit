@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:my_duit/core/theme/app_semantic_colors.dart';
-import 'package:my_duit/features/transactions/presentation/viewmodel/transaction_providers.dart';
+import 'package:my_duit/features/transactions/domain/entities/transaction_entity.dart';
 
 class TransactionItemCard extends StatelessWidget {
-  final TransactionModel transaction;
+  final TransactionEntity transaction;
 
   const TransactionItemCard({
     super.key,
@@ -59,7 +59,7 @@ class TransactionItemCard extends StatelessWidget {
         ? semanticColors.income
         : semanticColors.expense;
         
-    final iconBgColor = amountColor.withOpacity(0.15);
+    final iconBgColor = amountColor.withValues(alpha: 0.15);
 
     return Container(
       height: 72.0,
@@ -86,7 +86,7 @@ class TransactionItemCard extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             child: Icon(
-              _getIconData(transaction.iconName),
+              _getIconData(transaction.displayIcon),
               color: amountColor,
               size: 20.0,
             ),

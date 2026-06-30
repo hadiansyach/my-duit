@@ -5,14 +5,6 @@ import 'package:my_duit/core/theme/app_theme.dart';
 import 'package:my_duit/core/theme/theme_mode_provider.dart';
 import 'package:my_duit/features/main_nav/presentation/pages/main_nav_screen.dart';
 
-void main() {
-  runApp(
-    const ProviderScope(
-      child: MyApp(),
-    ),
-  );
-}
-
 class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
@@ -30,4 +22,3 @@ class MyApp extends ConsumerWidget {
     );
   }
 }
-

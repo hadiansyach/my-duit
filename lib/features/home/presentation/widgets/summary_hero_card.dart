@@ -43,7 +43,7 @@ class SummaryHeroCard extends ConsumerWidget {
           Text(
             'Total Saldo',
             style: theme.textTheme.labelMedium?.copyWith(
-              color: theme.colorScheme.onPrimary.withOpacity(0.7),
+              color: theme.colorScheme.onPrimary.withValues(alpha: 0.7),
             ),
           ),
           const SizedBox(height: 4.0),
@@ -60,7 +60,7 @@ class SummaryHeroCard extends ConsumerWidget {
           Container(
             padding: const EdgeInsets.all(8.0),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
+              color: Colors.white.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8.0),
             ),
             child: Row(
@@ -72,7 +72,7 @@ class SummaryHeroCard extends ConsumerWidget {
                         width: 32.0,
                         height: 32.0,
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.inversePrimary.withOpacity(0.2),
+                          color: theme.colorScheme.inversePrimary.withValues(alpha: 0.2),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
@@ -89,7 +89,7 @@ class SummaryHeroCard extends ConsumerWidget {
                             Text(
                               'Pemasukan',
                               style: theme.textTheme.labelSmall?.copyWith(
-                                color: theme.colorScheme.onPrimary.withOpacity(0.7),
+                                color: theme.colorScheme.onPrimary.withValues(alpha: 0.7),
                               ),
                             ),
                             Text(
@@ -109,7 +109,7 @@ class SummaryHeroCard extends ConsumerWidget {
                 Container(
                   width: 1.0,
                   height: 32.0,
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withValues(alpha: 0.2),
                 ),
                 Expanded(
                   child: Row(
@@ -119,7 +119,7 @@ class SummaryHeroCard extends ConsumerWidget {
                         width: 32.0,
                         height: 32.0,
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.errorContainer.withOpacity(0.2),
+                          color: theme.colorScheme.errorContainer.withValues(alpha: 0.2),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
@@ -136,7 +136,7 @@ class SummaryHeroCard extends ConsumerWidget {
                             Text(
                               'Pengeluaran',
                               style: theme.textTheme.labelSmall?.copyWith(
-                                color: theme.colorScheme.onPrimary.withOpacity(0.7),
+                                color: theme.colorScheme.onPrimary.withValues(alpha: 0.7),
                               ),
                             ),
                             Text(

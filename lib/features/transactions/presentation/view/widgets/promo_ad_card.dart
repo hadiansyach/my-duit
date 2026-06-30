@@ -80,7 +80,7 @@ class PromoAdCard extends StatelessWidget {
                       // Claim promo Action
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: theme.colorScheme.primaryContainer.withOpacity(0.1),
+                      backgroundColor: theme.colorScheme.primaryContainer.withValues(alpha: 0.1),
                       foregroundColor: theme.colorScheme.primary,
                       elevation: 0,
                     ),

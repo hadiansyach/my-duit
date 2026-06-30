@@ -1,4 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/drift.dart';
 import 'package:my_duit/data/local/database.dart';
 import 'package:my_duit/data/local/database_providers.dart';
@@ -8,7 +9,7 @@ import 'package:my_duit/features/categories/domain/utils/category_assets.dart';
 part 'categories_provider.g.dart';
 
 @riverpod
-Stream<List<Category>> watchCategories(WatchCategoriesRef ref) {
+Stream<List<Category>> watchCategories(Ref ref) {
   final dao = ref.watch(categoriesDaoProvider);
   
   return dao.watchAllCategories().asyncMap((list) async {
@@ -45,7 +46,7 @@ Stream<List<Category>> watchCategories(WatchCategoriesRef ref) {
 }
 
 @riverpod
-Stream<Map<int, int>> categoryTransactionCounts(CategoryTransactionCountsRef ref) {
+Stream<Map<int, int>> categoryTransactionCounts(Ref ref) {
   final transactionsStream = ref.watch(transactionsDaoProvider).watchAllTransactions();
   return transactionsStream.map((transactions) {
     final now = DateTime.now();

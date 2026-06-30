@@ -7,7 +7,7 @@ part of 'manage_account_viewmodel.dart';
 // **************************************************************************
 
 String _$manageAccountWalletHash() =>
-    r'87527619833fc35578a192894d37a0de4eeb1781';
+    r'b71156f4db8398a14d3601295a138ce57c663b4b';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -149,7 +149,7 @@ class _ManageAccountWalletProviderElement
 }
 
 String _$manageAccountTransactionsHash() =>
-    r'ebb54ee4746713d1cebc3ee1017fb54ee8d1e209';
+    r'151f3ba4202247ed3de3744cdfe078ca9674c947';
 
 /// See also [manageAccountTransactions].
 @ProviderFor(manageAccountTransactions)

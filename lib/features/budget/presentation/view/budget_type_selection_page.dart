@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_duit/features/budget/presentation/view/add_budget_page.dart';
-import 'package:my_duit/features/savings/presentation/view/add_savings_page.dart';
+import 'package:my_duit/features/savings/presentation/view/add_savings_goal_page.dart';
 
 class BudgetTypeSelectionPage extends StatelessWidget {
   const BudgetTypeSelectionPage({super.key});
@@ -132,7 +132,7 @@ class BudgetTypeSelectionPage extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const AddSavingsPage(),
+                      builder: (context) => const AddSavingsGoalPage(),
                     ),
                   );
                 },

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:my_duit/features/categories/domain/models/category_model.dart';
+import 'package:my_duit/data/local/database.dart';
+import 'package:my_duit/features/categories/domain/utils/category_assets.dart';
 
 class CategoryItemWidget extends StatelessWidget {
-  final CategoryModel category;
+  final Category category;
   final bool isSelected;
   final VoidCallback onTap;
 
@@ -28,7 +29,7 @@ class CategoryItemWidget extends StatelessWidget {
             height: 48.0,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: category.color.withValues(alpha: isSelected ? 0.35 : 0.15),
+              color: CategoryAssets.getColorFromHex(category.color).withValues(alpha: isSelected ? 0.35 : 0.15),
               border: Border.all(
                 color: isSelected
                     ? theme.colorScheme.primary
@@ -37,7 +38,7 @@ class CategoryItemWidget extends StatelessWidget {
               ),
             ),
             child: Icon(
-              category.icon,
+              CategoryAssets.getIconData(category.icon),
               size: 24.0,
               color: isSelected
                   ? theme.colorScheme.primary
@@ -46,7 +47,7 @@ class CategoryItemWidget extends StatelessWidget {
           ),
           const SizedBox(height: 8.0),
           Text(
-            category.label,
+            category.name,
             textAlign: TextAlign.center,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,

@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:my_duit/shared/widgets/numeric_keypad.dart';
+import 'package:my_duit/shared/widgets/custom_numeric_keypad.dart';
 import 'package:my_duit/features/savings/presentation/viewmodel/savings_providers.dart';
 import 'package:my_duit/features/wallets/presentation/viewmodel/wallets_providers.dart';
 
-class AddSavingsPage extends ConsumerStatefulWidget {
-  const AddSavingsPage({super.key});
+class AddSavingsGoalPage extends ConsumerStatefulWidget {
+  const AddSavingsGoalPage({super.key});
 
   @override
-  ConsumerState<AddSavingsPage> createState() => _AddSavingsPageState();
+  ConsumerState<AddSavingsGoalPage> createState() => _AddSavingsGoalPageState();
 }
 
-class _AddSavingsPageState extends ConsumerState<AddSavingsPage> {
+class _AddSavingsGoalPageState extends ConsumerState<AddSavingsGoalPage> {
   final _nameController = TextEditingController();
   String _amount = '0';
   DateTime _targetDate = DateTime.now().add(const Duration(days: 180)); // Default 6 months later
@@ -481,9 +481,9 @@ class _AddSavingsPageState extends ConsumerState<AddSavingsPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  NumericKeypad(
-                    onKeyPressed: _appendDigit,
-                    onBackspacePressed: _backspace,
+                  CustomNumericKeypad(
+                    onKeyPress: _appendDigit,
+                    onBackspace: _backspace,
                   ),
                   const SizedBox(height: 16.0),
                   SizedBox(
@@ -540,7 +540,7 @@ class _AddSavingsPageState extends ConsumerState<AddSavingsPage> {
                         );
 
                         // Pop back twice to main screen
-                        Navigator.pop(context); // Pop AddSavingsPage
+                        Navigator.pop(context); // Pop AddSavingsGoalPage
                         Navigator.pop(context); // Pop BudgetTypeSelectionPage
                       },
                       style: ElevatedButton.styleFrom(

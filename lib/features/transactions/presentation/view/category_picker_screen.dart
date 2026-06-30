@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_duit/core/theme/app_spacing.dart';
-import 'package:my_duit/features/categories/domain/models/category_model.dart';
+import 'package:my_duit/features/categories/presentation/viewmodel/categories_provider.dart';
 import 'package:my_duit/features/transactions/presentation/view/widgets/category_item_widget.dart';
 
 enum CategoryTab { expense, income }
 
-class CategoryPickerScreen extends StatelessWidget {
+class CategoryPickerScreen extends ConsumerWidget {
   final CategoryTab initialTab;
 
   const CategoryPickerScreen({
@@ -14,11 +15,10 @@ class CategoryPickerScreen extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final categories = initialTab == CategoryTab.expense
-        ? kExpenseCategories
-        : kIncomeCategories;
+    final categoriesAsync = ref.watch(watchCategoriesProvider);
+    
     final title = initialTab == CategoryTab.expense
         ? 'Kategori Pengeluaran'
         : 'Kategori Pemasukan';
@@ -28,7 +28,7 @@ class CategoryPickerScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            // AppBar manual (tidak pakai AppBar widget agar bisa sticky tanpa shadow)
+            // AppBar manual
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppSpacing.marginMobile,
@@ -60,25 +60,34 @@ class CategoryPickerScreen extends StatelessWidget {
 
             // Category Grid
             Expanded(
-              child: GridView.builder(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.marginMobile,
-                ),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 4,
-                  mainAxisSpacing: 24.0,
-                  crossAxisSpacing: 8.0,
-                  childAspectRatio: 0.75,  // tinggi > lebar karena ada label di bawah
-                ),
-                itemCount: categories.length,
-                itemBuilder: (context, index) {
-                  final category = categories[index];
-                  return CategoryItemWidget(
-                    category: category,
-                    isSelected: false,  // tidak ada pre-selection
-                    onTap: () => Navigator.pop(context, category),
+              child: categoriesAsync.when(
+                data: (allCategories) {
+                  final targetType = initialTab == CategoryTab.expense ? 'expense' : 'income';
+                  final categories = allCategories.where((c) => c.type == targetType).toList();
+                  
+                  return GridView.builder(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.marginMobile,
+                    ),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 4,
+                      mainAxisSpacing: 24.0,
+                      crossAxisSpacing: 8.0,
+                      childAspectRatio: 0.75,
+                    ),
+                    itemCount: categories.length,
+                    itemBuilder: (context, index) {
+                      final category = categories[index];
+                      return CategoryItemWidget(
+                        category: category,
+                        isSelected: false,
+                        onTap: () => Navigator.pop(context, category),
+                      );
+                    },
                   );
                 },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (err, stack) => Center(child: Text('Error: $err')),
               ),
             ),
           ],

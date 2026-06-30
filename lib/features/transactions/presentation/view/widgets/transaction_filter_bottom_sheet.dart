@@ -255,10 +255,10 @@ class _TransactionFilterBottomSheetState
                             vertical: 12.0,
                           ),
                           decoration: BoxDecoration(
-                            color: theme.colorScheme.primary.withOpacity(0.05),
+                            color: theme.colorScheme.primary.withValues(alpha: 0.05),
                             borderRadius: BorderRadius.circular(AppRadius.lg),
                             border: Border.all(
-                              color: theme.colorScheme.primary.withOpacity(0.2),
+                              color: theme.colorScheme.primary.withValues(alpha: 0.2),
                             ),
                           ),
                           child: Row(

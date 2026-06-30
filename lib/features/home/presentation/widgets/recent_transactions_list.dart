@@ -43,7 +43,7 @@ class RecentTransactionsList extends ConsumerWidget {
 
     Color getBadgeColor(String category, ThemeData theme) {
       final baseColor = getIconColor(category, theme);
-      return baseColor.withOpacity(0.15);
+      return baseColor.withValues(alpha: 0.15);
     }
 
     return Column(

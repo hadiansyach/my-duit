@@ -5,7 +5,8 @@ import 'package:my_duit/core/theme/app_radius.dart';
 import 'package:my_duit/core/theme/app_spacing.dart';
 import 'package:my_duit/features/transactions/presentation/viewmodel/add_transaction_providers.dart';
 import 'package:my_duit/features/transactions/presentation/view/category_picker_screen.dart';
-import 'package:my_duit/features/categories/domain/models/category_model.dart';
+import 'package:my_duit/data/local/database.dart' as db;
+import 'package:my_duit/features/categories/domain/utils/category_assets.dart';
 import 'package:my_duit/shared/widgets/numeric_keypad.dart';
 import 'package:my_duit/features/transactions/presentation/view/widgets/transaction_amount_display.dart';
 import 'package:my_duit/features/transactions/presentation/view/widgets/transaction_form_card.dart';
@@ -60,9 +61,12 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
     }
   }
 
-  Future<void> _navigateToCategoryPicker(BuildContext context, WidgetRef ref) async {
+  Future<void> _navigateToCategoryPicker(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
     final currentType = ref.read(addTransactionTypeProvider);
-    final result = await Navigator.push<CategoryModel>(
+    final result = await Navigator.push<db.Category>(
       context,
       MaterialPageRoute(
         builder: (_) => CategoryPickerScreen(
@@ -77,7 +81,10 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
     }
   }
 
-  Future<void> _navigateToWalletPicker(BuildContext context, void Function(WalletAccountModel) onSelected) async {
+  Future<void> _navigateToWalletPicker(
+    BuildContext context,
+    void Function(WalletAccountModel) onSelected,
+  ) async {
     final result = await Navigator.push<WalletAccountModel>(
       context,
       MaterialPageRoute(builder: (_) => const WalletPickerScreen()),
@@ -131,7 +138,9 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                 iconColor: walletIconColor,
                 iconBgColor: walletIconBgColor,
                 onTap: () => _navigateToWalletPicker(context, (selectedWallet) {
-                  ref.read(addTransactionWalletProvider.notifier).setWallet(selectedWallet);
+                  ref
+                      .read(addTransactionWalletProvider.notifier)
+                      .setWallet(selectedWallet);
                 }),
               ),
             ),
@@ -139,8 +148,8 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
             Expanded(
               child: TransactionFormCard(
                 title: 'Kategori',
-                value: category?.label ?? 'Pilih Kategori',
-                iconData: category?.icon ?? Icons.category_rounded,
+                value: category?.name ?? 'Pilih Kategori',
+                iconData: category != null ? CategoryAssets.getIconData(category.icon) : Icons.category_rounded,
                 iconColor: isCategoryDefault
                     ? theme.colorScheme.onSurfaceVariant
                     : theme.colorScheme.primary,
@@ -200,12 +209,16 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                 child: TextField(
                   controller: _notesController,
                   onChanged: (val) {
-                    ref.read(addTransactionNotesProvider.notifier).setNotes(val);
+                    ref
+                        .read(addTransactionNotesProvider.notifier)
+                        .setNotes(val);
                   },
                   decoration: InputDecoration(
                     hintText: 'Tambahkan catatan (opsional)',
                     hintStyle: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                      color: theme.colorScheme.onSurfaceVariant.withValues(
+                        alpha: 0.5,
+                      ),
                     ),
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -277,7 +290,9 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
           iconData: sourceWallet?.icon ?? Icons.account_balance_wallet_rounded,
           showChevron: true,
           onTap: () => _navigateToWalletPicker(context, (selectedWallet) {
-            ref.read(addTransactionSourceWalletProvider.notifier).setWallet(selectedWallet);
+            ref
+                .read(addTransactionSourceWalletProvider.notifier)
+                .setWallet(selectedWallet);
           }),
         ),
         const SizedBox(height: AppSpacing.md),
@@ -287,7 +302,9 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
           iconData: destWallet?.icon ?? Icons.account_balance_rounded,
           showChevron: true,
           onTap: () => _navigateToWalletPicker(context, (selectedWallet) {
-            ref.read(addTransactionDestinationWalletProvider.notifier).setWallet(selectedWallet);
+            ref
+                .read(addTransactionDestinationWalletProvider.notifier)
+                .setWallet(selectedWallet);
           }),
         ),
         const SizedBox(height: AppSpacing.md),
@@ -377,12 +394,16 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                 child: TextField(
                   controller: _notesController,
                   onChanged: (val) {
-                    ref.read(addTransactionNotesProvider.notifier).setNotes(val);
+                    ref
+                        .read(addTransactionNotesProvider.notifier)
+                        .setNotes(val);
                   },
                   decoration: InputDecoration(
                     hintText: 'Tambahkan catatan (opsional)',
                     hintStyle: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                      color: theme.colorScheme.onSurfaceVariant.withValues(
+                        alpha: 0.5,
+                      ),
                     ),
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -437,7 +458,9 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
             Container(
               decoration: BoxDecoration(
                 color: theme.colorScheme.surfaceContainerLowest,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(AppRadius.xl),
+                ),
                 boxShadow: const [
                   BoxShadow(
                     color: Color(0x0A000000),
@@ -458,24 +481,39 @@ class _AddTransactionPageState extends ConsumerState<AddTransactionPage> {
                   NumericKeypad(
                     onKeyPressed: (value) {
                       if (value == '000') {
-                        ref.read(addTransactionAmountProvider.notifier).appendTripleZero();
+                        ref
+                            .read(addTransactionAmountProvider.notifier)
+                            .appendTripleZero();
                       } else {
-                        ref.read(addTransactionAmountProvider.notifier).appendNumber(value);
+                        ref
+                            .read(addTransactionAmountProvider.notifier)
+                            .appendNumber(value);
                       }
                     },
                     onBackspacePressed: () {
-                      ref.read(addTransactionAmountProvider.notifier).removeLast();
+                      ref
+                          .read(addTransactionAmountProvider.notifier)
+                          .removeLast();
                     },
                   ),
                   const SizedBox(height: AppSpacing.md),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () {
-                        // Submit logic (currently prints or pops)
-                        final finalAmount = ref.read(addTransactionAmountProvider);
-                        debugPrint('Saved transaction: Amount $finalAmount');
-                        Navigator.pop(context);
+                      onPressed: () async {
+                        final success = await ref
+                            .read(addTransactionSaveProvider.notifier)
+                            .saveTransaction();
+                        if (success) {
+                          if (context.mounted) Navigator.pop(context);
+                        } else {
+                          final error = ref.read(addTransactionSaveProvider);
+                          if (error != null && context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Error bejir $error')),
+                            );
+                          }
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: theme.colorScheme.primary,

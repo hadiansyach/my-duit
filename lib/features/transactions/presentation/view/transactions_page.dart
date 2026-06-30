@@ -39,7 +39,7 @@ class TransactionsPage extends ConsumerWidget {
                             Icon(
                               Icons.search_off,
                               size: 64.0,
-                              color: theme.colorScheme.outline.withOpacity(0.5),
+                              color: theme.colorScheme.outline.withValues(alpha: 0.5),
                             ),
                             const SizedBox(height: 16.0),
                             Text(
@@ -55,13 +55,20 @@ class TransactionsPage extends ConsumerWidget {
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: theme.colorScheme.outline,
                               ),
-                              textAlign: CenterAligning(),
+                              textAlign: centerAligning(),
                             ),
                           ],
                         ),
                       )
-                    : ListView.builder(
-                        physics: const BouncingScrollPhysics(),
+                    : NotificationListener<ScrollEndNotification>(
+                        onNotification: (scrollInfo) {
+                          if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+                            ref.read(transactionLimitProvider.notifier).state += 30;
+                          }
+                          return true;
+                        },
+                        child: ListView.builder(
+                          physics: const BouncingScrollPhysics(),
                         padding: const EdgeInsets.only(
                           bottom: 100.0,
                         ), // Padding below for bottom navigation bar
@@ -96,12 +103,14 @@ class TransactionsPage extends ConsumerWidget {
                           return dailyGroup;
                         },
                       ),
+                    ),
               ),
             ],
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: null,
         onPressed: () {
           Navigator.push(
             context,
@@ -117,5 +126,5 @@ class TransactionsPage extends ConsumerWidget {
     );
   }
 
-  TextAlign CenterAligning() => TextAlign.center;
+  TextAlign centerAligning() => TextAlign.center;
 }

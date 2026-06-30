@@ -43,7 +43,7 @@ class BudgetTopAppBar extends StatelessWidget implements PreferredSizeWidget {
                     width: 40.0,
                     height: 40.0,
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.primary.withOpacity(0.2),
+                      color: theme.colorScheme.primary.withValues(alpha: 0.2),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(

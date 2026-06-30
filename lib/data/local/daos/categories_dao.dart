@@ -6,7 +6,7 @@ part 'categories_dao.g.dart';
 
 @DriftAccessor(tables: [Categories])
 class CategoriesDao extends DatabaseAccessor<AppDatabase> with _$CategoriesDaoMixin {
-  CategoriesDao(AppDatabase db) : super(db);
+  CategoriesDao(super.db);
 
   Stream<List<Category>> watchAllCategories() => select(categories).watch();
   Future<int> insertCategory(CategoriesCompanion category) => into(categories).insert(category);

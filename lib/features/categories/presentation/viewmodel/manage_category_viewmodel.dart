@@ -1,11 +1,12 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_duit/data/local/database.dart';
 import 'package:my_duit/data/local/database_providers.dart';
 
 part 'manage_category_viewmodel.g.dart';
 
 @riverpod
-Stream<Category?> watchCategoryById(WatchCategoryByIdRef ref, int categoryId) {
+Stream<Category?> watchCategoryById(Ref ref, int categoryId) {
   final dao = ref.watch(categoriesDaoProvider);
   return dao.watchAllCategories().map((list) {
     try {
@@ -17,7 +18,7 @@ Stream<Category?> watchCategoryById(WatchCategoryByIdRef ref, int categoryId) {
 }
 
 @riverpod
-Stream<List<Transaction>> watchCategoryTransactions(WatchCategoryTransactionsRef ref, int categoryId) {
+Stream<List<Transaction>> watchCategoryTransactions(Ref ref, int categoryId) {
   final dao = ref.watch(transactionsDaoProvider);
   return dao.watchAllTransactions().map((list) {
     final filtered = list.where((t) => t.categoryId == categoryId).toList();
@@ -29,7 +30,7 @@ Stream<List<Transaction>> watchCategoryTransactions(WatchCategoryTransactionsRef
 }
 
 @riverpod
-Stream<double> watchCategoryMonthlyTotal(WatchCategoryMonthlyTotalRef ref, int categoryId) {
+Stream<double> watchCategoryMonthlyTotal(Ref ref, int categoryId) {
   final dao = ref.watch(transactionsDaoProvider);
   return dao.watchAllTransactions().map((list) {
     final now = DateTime.now();

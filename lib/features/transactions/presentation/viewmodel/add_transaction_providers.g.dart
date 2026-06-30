@@ -61,15 +61,12 @@ final addTransactionWalletProvider =
 
 typedef _$AddTransactionWallet = AutoDisposeNotifier<WalletAccountModel?>;
 String _$addTransactionCategoryHash() =>
-    r'9cc5f69cc8978d7eda87845f8b92735320619358';
+    r'3d3f24ff1cf002e526caa9f0d7a4e43f9f9a5775';
 
 /// See also [AddTransactionCategory].
 @ProviderFor(AddTransactionCategory)
 final addTransactionCategoryProvider =
-    AutoDisposeNotifierProvider<
-      AddTransactionCategory,
-      CategoryModel?
-    >.internal(
+    AutoDisposeNotifierProvider<AddTransactionCategory, Category?>.internal(
       AddTransactionCategory.new,
       name: r'addTransactionCategoryProvider',
       debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -79,7 +76,7 @@ final addTransactionCategoryProvider =
       allTransitiveDependencies: null,
     );
 
-typedef _$AddTransactionCategory = AutoDisposeNotifier<CategoryModel?>;
+typedef _$AddTransactionCategory = AutoDisposeNotifier<Category?>;
 String _$addTransactionDateHash() =>
     r'6815a5d9cac49b6af0d24480834c04729f9e157b';
 
@@ -172,5 +169,22 @@ final addTransactionAdminFeeProvider =
     );
 
 typedef _$AddTransactionAdminFee = AutoDisposeNotifier<String>;
+String _$addTransactionSaveHash() =>
+    r'4d1cb45ce91058615c47f6d2161b3b439904de03';
+
+/// See also [AddTransactionSave].
+@ProviderFor(AddTransactionSave)
+final addTransactionSaveProvider =
+    AutoDisposeNotifierProvider<AddTransactionSave, String?>.internal(
+      AddTransactionSave.new,
+      name: r'addTransactionSaveProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$addTransactionSaveHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$AddTransactionSave = AutoDisposeNotifier<String?>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
